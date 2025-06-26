@@ -1,0 +1,5 @@
+[[library]]
+type="file"
+name="shared"
+path="../shared"
+includes=["shared/uv.hpp"]
