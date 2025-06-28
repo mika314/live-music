@@ -106,6 +106,20 @@ namespace uv
     Cb cb = nullptr;
   };
 
+  class Async
+  {
+    friend class Uv;
+
+  public:
+    using Cb = std::function<auto()->void>;
+    auto send() -> void;
+
+  private:
+    Async(uv_loop_t *, Cb);
+    std::unique_ptr<uv_async_t> handle;
+    Cb cb;
+  };
+
   class Uv
   {
   public:
@@ -117,6 +131,7 @@ namespace uv
     auto createIdle() -> Idle;
     auto createPrepare() -> Prepare;
     auto createTimer() -> Timer;
+    auto createAsync(Async::Cb) -> Async;
     auto loop() const -> decltype(uv_default_loop());
     auto tick() -> int;
 

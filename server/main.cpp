@@ -1,3 +1,4 @@
+#include "connection.hpp"
 #include <iostream>
 #include <shared/uv.hpp>
 
@@ -9,7 +10,7 @@ int main()
   auto loop = uv::Uv{};
   auto server = uv::Tcp{loop.loop()};
   server.bind("0.0.0.0", DEFAULT_PORT, 0);
-  std::vector<std::unique_ptr<uv::Tcp>> connections;
+  std::vector<std::unique_ptr<Connection>> connections;
   server.listen(DEFAULT_BACKLOG, [&connections](int status, uv::Tcp connection) {
     if (status < 0)
     {
@@ -17,23 +18,13 @@ int main()
       return;
     }
 
-    connections.emplace_back(std::make_unique<uv::Tcp>(std::move(connection)));
-    connections.back()->readStart(
-      [tcp = connections.back().get(), &connections](int status, std::string buf) {
-        if (status < 0)
-        {
-          std::cout << status << std::endl;
-          if (auto it = std::find_if(std::begin(connections),
-                                     std::end(connections),
-                                     [tcp](const auto &x) { return tcp == x.get(); });
-              it != std::end(connections))
-            connections.erase(it);
-          return;
-        }
-
-        std::cout << status << ": " << buf << std::endl;
-        tcp->write(std::move(buf), [](int) {});
-      });
+    connections.emplace_back(std::make_unique<Connection>(std::move(connection), [&](Connection *self) {
+      if (auto it = std::find_if(std::begin(connections),
+                                 std::end(connections),
+                                 [self](const auto &x) { return self == x.get(); });
+          it != std::end(connections))
+        connections.erase(it);
+    }));
   });
 
   printf("Listening on port %d...\n", DEFAULT_PORT);

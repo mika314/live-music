@@ -259,6 +259,11 @@ namespace uv
     return Prepare{loop_};
   }
 
+  auto Uv::createAsync(Async::Cb cb) -> Async
+  {
+    return Async{loop_, std::move(cb)};
+  };
+
   Tcp::Tcp(Tcp &&other)
     : socket(std::move(other.socket)), readCb(std::move(other.readCb)), buf(std::move(other.buf))
   {
@@ -465,5 +470,16 @@ namespace uv
   auto Uv::createFsEvent() -> FsEvent
   {
     return FsEvent{loop_};
+  }
+
+  auto Async::send() -> void
+  {
+    uv_async_send(handle.get());
+  }
+
+  Async::Async(uv_loop_t *loop, Cb aCb) : handle(std::make_unique<uv_async_t>()), cb(std::move(aCb))
+  {
+    uv_async_init(loop, handle.get(), [](uv_async_t *h) { static_cast<Async *>(h->data)->cb(); });
+    handle->data = this;
   }
 } // namespace uv
