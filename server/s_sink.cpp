@@ -1,4 +1,4 @@
-#include "sink.hpp"
+#include "s_sink.hpp"
 
 auto Sink::add(class Source *v) -> void
 {

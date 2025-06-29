@@ -1,10 +1,9 @@
-#include "connection.hpp"
-#include "speaker.hpp"
-#include "synth.hpp"
+#include "s_conn.hpp"
+#include "s_speaker.hpp"
+#include "s_synth.hpp"
 #include <log/log.hpp>
 
-Connection::Connection(uv::Tcp &&aTcp, std::function<auto(Connection *self)->void> destroy)
-  : tcp(std::move(aTcp))
+Conn::Conn(uv::Tcp &&aTcp, std::function<auto(Conn *self)->void> destroy) : tcp(std::move(aTcp))
 {
   tcp.readStart([this, destroy = std::move(destroy)](int status, std::string aBuf) {
     if (status < 0)
@@ -34,17 +33,17 @@ Connection::Connection(uv::Tcp &&aTcp, std::function<auto(Connection *self)->voi
   });
 }
 
-auto Connection::processPack(std::string_view pck) -> void
+auto Conn::processPack(std::string_view pck) -> void
 {
   ProtoC2S::deser(pck.data(), pck.data() + pck.size(), *this);
 }
 
-auto Connection::operator()(msg::Log v) -> void
+auto Conn::operator()(msg::Log v) -> void
 {
   std::cout << v.msg << std::endl;
 }
 
-auto Connection::send(auto id, auto rsp)
+auto Conn::send(auto id, auto rsp)
 {
   std::array<char, 0x10000> buf;
   auto strm = OStrm{buf.begin(), buf.end()};
@@ -59,14 +58,14 @@ auto Connection::send(auto id, auto rsp)
   tcp.write(std::string{buf.data(), buf.data() + strm.size()}, [](int /*status*/) {});
 }
 
-auto Connection::operator()(msg::NowReq v) -> void
+auto Conn::operator()(msg::NowReq v) -> void
 {
   LOG("now request", v.id);
   send(v.id, msg::NowRsp{.samples = 314});
 }
 
 template <typename E, typename... Args>
-auto Connection::ctor(int32_t rspId, Args &&...args)
+auto Conn::ctor(int32_t rspId, Args &&...args)
 {
   auto entity = std::make_unique<E>(std::forward<Args>(args)...);
   const auto id = entity->id;
@@ -74,15 +73,28 @@ auto Connection::ctor(int32_t rspId, Args &&...args)
   send(rspId, msg::CtorRsp{.id = id});
 }
 
-auto Connection::operator()(msg::Speaker_CtorReq v) -> void
+auto Conn::operator()(msg::Speaker_CtorReq v) -> void
 {
   LOG("speaker ctor", v.id);
   ctor<Speaker>(v.id);
 }
 
-auto Connection::operator()(msg::Synth_CtorReq v) -> void
+auto Conn::operator()(msg::Synth_CtorReq v) -> void
 {
   LOG("synth ctor", v.id);
-  auto sink = dynamic_cast<Sink *>(entities[v.sinkId].get());
-  ctor<Synth>(v.id, *sink);
+  auto &sink = *dynamic_cast<Sink *>(entities[v.sinkId].get());
+  ctor<Synth>(v.id, bpm, sink);
+}
+
+auto Conn::operator()(msg::SetBpm v) -> void
+{
+  LOG("set BPM", v.v);
+  bpm = v.v;
+}
+
+auto Conn::operator()(msg::Synth_Note v) -> void
+{
+  LOG("synth id:", v.id, "note:", v.note.n, "dur:", v.note.dur, "vel:", v.note.vel);
+  auto &synth = *dynamic_cast<Synth *>(entities[v.id].get());
+  synth(v.note);
 }

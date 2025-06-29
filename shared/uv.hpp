@@ -35,7 +35,7 @@ namespace uv
     auto onRead(ssize_t nread, const uv_buf_t *buf) -> void;
     auto onWrite(int status, WriteCb cb) -> void { cb(status); }
     auto deinit() -> void;
-    auto onNewConnection(int status) -> void;
+    auto onNewConn(int status) -> void;
   };
 
   class Timer

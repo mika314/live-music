@@ -1,5 +1,5 @@
 #pragma once
-#include "entity.hpp"
+#include "s_entity.hpp"
 #include <vector>
 
 class Source : public Entity
@@ -9,6 +9,6 @@ public:
   virtual ~Source();
   virtual auto pull(int samples) -> std::vector<int16_t> = 0;
 
-private:
+protected:
   std::reference_wrapper<Sink> sink;
 };

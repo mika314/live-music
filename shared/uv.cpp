@@ -105,11 +105,11 @@ namespace uv
         LOG("listen callback is nullptr");
         return;
       }
-      self->onNewConnection(status);
+      self->onNewConn(status);
     });
   }
 
-  auto Tcp::onNewConnection(int status) -> void
+  auto Tcp::onNewConn(int status) -> void
   {
     if (status < 0)
     {

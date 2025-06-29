@@ -1,5 +1,6 @@
 #pragma once
 
+#include "note.hpp"
 #include <ser/macro.hpp>
 #include <ser/proto.hpp>
 
@@ -19,7 +20,7 @@ namespace msg
 
   struct NowRsp
   {
-    int32_t samples; // 44100 Hz
+    int32_t samples;
     SER_PROPS(samples);
   };
 
@@ -41,6 +42,20 @@ namespace msg
     int32_t sinkId;
     SER_PROPS(id, sinkId);
   };
+
+  struct SetBpm
+  {
+    float v;
+    SER_PROPS(v);
+  };
+
+  struct Synth_Note
+  {
+    int32_t id;
+    Note note;
+    SER_PROPS(id, note);
+  };
 } // namespace msg
 
-using ProtoC2S = Proto<msg::Log, msg::NowReq, msg::Speaker_CtorReq, msg::Synth_CtorReq>;
+using ProtoC2S =
+  Proto<msg::Log, msg::NowReq, msg::SetBpm, msg::Speaker_CtorReq, msg::Synth_CtorReq, msg::Synth_Note>;

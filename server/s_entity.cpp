@@ -1,4 +1,4 @@
-#include "entity.hpp"
+#include "s_entity.hpp"
 
 auto Entity::nextId() -> int32_t
 {

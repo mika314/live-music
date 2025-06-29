@@ -1,5 +1,5 @@
-#include "speaker.hpp"
-#include "source.hpp"
+#include "s_speaker.hpp"
+#include "s_source.hpp"
 #include <log/log.hpp>
 
 Speaker::Speaker()
@@ -16,4 +16,14 @@ Speaker::Speaker()
     })
 {
   audio.pause(0);
+}
+
+auto Speaker::lock() -> void
+{
+  audio.lock();
+}
+
+auto Speaker::unlock() -> void
+{
+  audio.unlock();
 }

@@ -1,66 +1,11 @@
-#include "connection_thread.hpp"
+#include "live-music.hpp"
 #include <log/log.hpp>
-#include <shared/proto.hpp>
-
-auto send(auto v)
-{
-  auto &inst = ConnectionThread::getInst();
-  std::array<char, 0x10000> buf;
-  const auto sz = static_cast<int32_t>(ProtoC2S::ser(std::move(v), buf.data(), buf.data() + buf.size()));
-  inst.req(std::string{buf.data(), buf.data() + sz});
-}
-
-auto log(std::string v) -> void
-{
-  send(msg::Log{.msg = std::move(v)});
-}
-
-template <typename Rsp>
-auto reqRsp(auto req) -> Rsp
-{
-  auto &inst = ConnectionThread::getInst();
-  std::array<char, 0x10000> buf;
-  const auto id = req.id;
-  const auto sz =
-    static_cast<int32_t>(ProtoC2S::ser(std::move(req), buf.data(), buf.data() + buf.size()));
-  inst.req(std::string{buf.data(), buf.data() + sz});
-  auto payload = inst.waitForRspId(id);
-  auto st = IStrm{payload.data(), payload.data() + payload.size()};
-  Rsp r;
-  ::deser(st, r);
-  return r;
-}
-
-auto now() -> int
-{
-  return reqRsp<msg::NowRsp>(msg::NowReq{.id = ConnectionThread::getInst().getNextId()}).samples;
-}
-
-class Speaker
-{
-public:
-  Speaker()
-    : id(reqRsp<msg::CtorRsp>(msg::Speaker_CtorReq{.id = ConnectionThread::getInst().getNextId()}).id)
-  {
-  }
-  int32_t id;
-};
-
-class Synth
-{
-public:
-  Synth(Speaker &speaker)
-    : id(reqRsp<msg::CtorRsp>(
-           msg::Synth_CtorReq{.id = ConnectionThread::getInst().getNextId(), .sinkId = speaker.id})
-           .id)
-  {
-  }
-  int32_t id;
-};
 
 auto main() -> int
 {
-  ConnectionThread::init();
+  Conn::init();
+
+  setBpm(130);
 
   auto t = std::thread{[]() {
     for (auto i = 0; i < 10; ++i)
@@ -72,8 +17,19 @@ auto main() -> int
 
   auto speaker = Speaker{};
   auto synth = Synth{speaker};
-  using namespace std::chrono_literals;
-  std::this_thread::sleep_for(1s);
+  for (auto i = 0; i < 16; ++i)
+  {
+    synth(Note{.n = 0, .dur = 0.5, .vel = 1});
+    delay(1);
+    synth(Note{.n = 5, .dur = 0.5, .vel = 1});
+    delay(1);
+    synth(Note{.n = 7, .dur = 0.5, .vel = 1});
+    delay(1);
+    synth(Note{.n = 0, .dur = 0.25, .vel = 0.5});
+    delay(0.5);
+    synth(Note{.n = 0, .dur = 0.25, .vel = .7});
+    delay(0.5);
+  }
 
   t.join();
 
