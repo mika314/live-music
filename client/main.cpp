@@ -36,6 +36,28 @@ auto now() -> int
   return reqRsp<msg::NowRsp>(msg::NowReq{.id = ConnectionThread::getInst().getNextId()}).samples;
 }
 
+class Speaker
+{
+public:
+  Speaker()
+    : id(reqRsp<msg::CtorRsp>(msg::Speaker_CtorReq{.id = ConnectionThread::getInst().getNextId()}).id)
+  {
+  }
+  int32_t id;
+};
+
+class Synth
+{
+public:
+  Synth(Speaker &speaker)
+    : id(reqRsp<msg::CtorRsp>(
+           msg::Synth_CtorReq{.id = ConnectionThread::getInst().getNextId(), .sinkId = speaker.id})
+           .id)
+  {
+  }
+  int32_t id;
+};
+
 auto main() -> int
 {
   ConnectionThread::init();
@@ -47,6 +69,11 @@ auto main() -> int
 
   for (auto i = 0; i < 10; ++i)
     log("Hello world! Main thread! " + std::to_string(i));
+
+  auto speaker = Speaker{};
+  auto synth = Synth{speaker};
+  using namespace std::chrono_literals;
+  std::this_thread::sleep_for(1s);
 
   t.join();
 

@@ -75,21 +75,18 @@ auto ConnectionThread::onRead(int status, std::string v) -> void
     LOG("read error:", status);
     return;
   }
-  LOG("read", v.size());
   buf += std::move(v);
   for (;;)
   {
     if (sz < 0 && buf.size() >= sizeof(sz))
     {
       sz = *reinterpret_cast<const int32_t *>(buf.data());
-      LOG("pack sz:", sz);
       buf.erase(std::begin(buf), std::begin(buf) + sizeof(int32_t));
       continue;
     }
     if (sz > 0 && static_cast<int>(buf.size()) >= sz)
     {
       const auto id = *reinterpret_cast<int32_t *>(buf.data());
-      LOG("id", id);
       q->pushToRspQ(id, std::string{std::begin(buf) + sizeof(int32_t), std::begin(buf) + sz});
       buf.erase(std::begin(buf), std::begin(buf) + sz);
       sz = -1;

@@ -1,4 +1,6 @@
 #include "connection.hpp"
+#include "speaker.hpp"
+#include "synth.hpp"
 #include <log/log.hpp>
 
 Connection::Connection(uv::Tcp &&aTcp, std::function<auto(Connection *self)->void> destroy)
@@ -42,19 +44,45 @@ auto Connection::operator()(msg::Log v) -> void
   std::cout << v.msg << std::endl;
 }
 
-auto Connection::operator()(msg::NowReq v) -> void
+auto Connection::send(auto id, auto rsp)
 {
-  LOG("now request", v.id);
-  auto m = msg::NowRsp{.samples = 314};
   std::array<char, 0x10000> buf;
   auto strm = OStrm{buf.begin(), buf.end()};
-  ::ser(strm, std::move(m));
+  ::ser(strm, std::move(rsp));
   const auto sz = static_cast<int32_t>(strm.size() + sizeof(int32_t));
   tcp.write(
     std::string{reinterpret_cast<const char *>(&sz), reinterpret_cast<const char *>(&sz) + sizeof(sz)},
     [](int /*status*/) {});
-  tcp.write(std::string{reinterpret_cast<const char *>(&v.id),
-                        reinterpret_cast<const char *>(&v.id) + sizeof(v.id)},
-            [](int /*status*/) {});
+  tcp.write(
+    std::string{reinterpret_cast<const char *>(&id), reinterpret_cast<const char *>(&id) + sizeof(id)},
+    [](int /*status*/) {});
   tcp.write(std::string{buf.data(), buf.data() + strm.size()}, [](int /*status*/) {});
+}
+
+auto Connection::operator()(msg::NowReq v) -> void
+{
+  LOG("now request", v.id);
+  send(v.id, msg::NowRsp{.samples = 314});
+}
+
+template <typename E, typename... Args>
+auto Connection::ctor(int32_t rspId, Args &&...args)
+{
+  auto entity = std::make_unique<E>(std::forward<Args>(args)...);
+  const auto id = entity->id;
+  entities.emplace(id, std::move(entity));
+  send(rspId, msg::CtorRsp{.id = id});
+}
+
+auto Connection::operator()(msg::Speaker_CtorReq v) -> void
+{
+  LOG("speaker ctor", v.id);
+  ctor<Speaker>(v.id);
+}
+
+auto Connection::operator()(msg::Synth_CtorReq v) -> void
+{
+  LOG("synth ctor", v.id);
+  auto sink = dynamic_cast<Sink *>(entities[v.sinkId].get());
+  ctor<Synth>(v.id, *sink);
 }

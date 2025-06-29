@@ -3,7 +3,6 @@
   ((
     flycheck-clang-include-path .
     (
-     ".coddle/libs_src"
+     "../server/.coddle/libs_src"
      ".."
-     "/usr/include/SDL2"
      )))))

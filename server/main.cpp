@@ -1,5 +1,6 @@
 #include "connection.hpp"
 #include <iostream>
+#include <sdlpp/sdlpp.hpp>
 #include <shared/uv.hpp>
 
 #define DEFAULT_PORT 7000
@@ -7,6 +8,7 @@
 
 int main()
 {
+  auto init = sdl::Init{SDL_INIT_AUDIO};
   auto loop = uv::Uv{};
   auto server = uv::Tcp{loop.loop()};
   server.bind("0.0.0.0", DEFAULT_PORT, 0);
