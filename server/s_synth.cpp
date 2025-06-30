@@ -4,7 +4,10 @@
 #include <log/log.hpp>
 #include <shared/consts.hpp>
 
-Synth::Synth(const float &aBpm, class Sink &sink) : Source(sink), bpm(aBpm) {}
+Synth::Synth(const float &aBpm, class Sink &sink, OscType aOscType, Envelope aEnvelope)
+  : Source(sink), bpm(aBpm), oscType(aOscType), envelope(aEnvelope)
+{
+}
 
 auto Synth::pull(int samples) -> std::vector<float>
 {
@@ -13,12 +16,11 @@ auto Synth::pull(int samples) -> std::vector<float>
   for (auto i = 0; i < samples; ++i)
   {
     const auto a = [this]() {
-      float a = 0;
+      auto a = 0.0f;
       for (const auto &n : notes)
-        a += static_cast<float>(
-          pow(10, n.vel / 20) *
-          envelope.amp(1.f * (pos - n.start) / SampleRate, 1.f * (n.end - n.start) / SampleRate) *
-          sin(440 * powf(2, (n.note - 69) / 12.f) * pos / SampleRate * 2 * 3.1415));
+        a += powf(10.f, n.vel / 20.f) *
+             envelope.amp(1.f * (pos - n.start) / SampleRate, 1.f * (n.end - n.start) / SampleRate) *
+             osc(440.f * powf(2.f, (n.note - 69.f) / 12.f));
       return a;
     }();
     ++pos;
@@ -47,4 +49,18 @@ auto Synth::operator()(Note n) -> void
 auto Synth::operator()(Envelope v) -> void
 {
   envelope = std::move(v);
+}
+
+auto Synth::osc(float freq) -> float
+{
+  const auto phase = freq * pos / SampleRate;
+  const auto frac = phase - std::floor(phase);
+
+  switch (oscType)
+  {
+  case OscType::sin: return std::sin(frac * 2.f * M_PI);
+  case OscType::saw: return 2.f * frac - 1.0f; break;
+  case OscType::square: return (frac < .5f) ? 1.f : -1.f;
+  case OscType::triangle: return 1.f - 4.f * std::fabs(frac - .5f);
+  }
 }

@@ -16,8 +16,10 @@ auto main() -> int
     log("Hello world! Main thread! " + std::to_string(i));
 
   auto speaker = Speaker{};
-  auto synth = Synth{speaker};
-  synth(Envelope{.attack = .1, .decay = .5, .sustain = -20, .release = .5});
+  auto synth = Synth{
+    speaker,
+    Synth::CtorParams{.oscType = OscType::triangle,
+                      .envelope = Envelope{.attack = .1, .decay = .5, .sustain = -20, .release = .5}}};
   for (auto i = 0; i < 4; ++i)
   {
     synth(Note{.n = 60 + 0, .dur = 1, .vel = -20});

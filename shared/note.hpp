@@ -4,7 +4,7 @@
 
 struct Note
 {
-  int32_t n = 60;
+  float n = 60;
   float dur = 1;
   float vel = -6;
   SER_PROPS(n, dur, vel);

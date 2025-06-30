@@ -2,7 +2,12 @@
 #include "conn.hpp"
 #include "sink.hpp"
 
-Synth::Synth(Sink &sink) : Entity(ctor(msg::Synth_CtorReq{.sinkId = sink.getId()})) {}
+Synth::Synth(Sink &sink, CtorParams params)
+  : Entity(ctor(msg::Synth_CtorReq{.sinkId = sink.getId(),
+                                   .oscType = params.oscType,
+                                   .envelope = std::move(params.envelope)}))
+{
+}
 
 auto Synth::operator()(Note v) -> void
 {

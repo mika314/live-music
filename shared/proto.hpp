@@ -2,6 +2,7 @@
 
 #include "envelope.hpp"
 #include "note.hpp"
+#include "osc_type.hpp"
 #include <ser/macro.hpp>
 #include <ser/proto.hpp>
 
@@ -41,7 +42,9 @@ namespace msg
   {
     int32_t id;
     int32_t sinkId;
-    SER_PROPS(id, sinkId);
+    OscType oscType;
+    Envelope envelope;
+    SER_PROPS(id, sinkId, oscType, envelope);
   };
 
   struct SetBpm

@@ -83,7 +83,7 @@ auto Conn::operator()(msg::Synth_CtorReq v) -> void
 {
   LOG("synth ctor", v.id);
   auto &sink = *dynamic_cast<Sink *>(entities[v.sinkId].get());
-  ctor<Synth>(v.id, bpm, sink);
+  ctor<Synth>(v.id, bpm, sink, v.oscType, std::move(v.envelope));
 }
 
 auto Conn::operator()(msg::SetBpm v) -> void
