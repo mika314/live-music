@@ -1,8 +1,7 @@
 #pragma once
-#include "s_entity.hpp"
 #include <vector>
 
-class Source : public Entity
+class Source
 {
 public:
   Source(class Sink &);

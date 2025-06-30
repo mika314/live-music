@@ -1,16 +1,17 @@
 #pragma once
+#include "s_entity.hpp"
 #include "s_sink.hpp"
-#include <sdlpp/sdlpp.hpp>
+#include "s_source.hpp"
 
-class Speaker : public Sink
+class Speaker : public Sink, public Source, public Entity
 {
 public:
-  Speaker();
+  Speaker(class MasterSpeaker &);
   auto lock() -> void final;
   auto unlock() -> void final;
+  auto pull(int samples) -> std::vector<float> final;
+  auto isBusy() const -> bool final;
 
 private:
-  SDL_AudioSpec want;
-  SDL_AudioSpec have;
-  sdl::Audio audio;
+  std::reference_wrapper<MasterSpeaker> masterSpeaker;
 };

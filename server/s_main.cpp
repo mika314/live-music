@@ -1,3 +1,4 @@
+#include "master_speaker.hpp"
 #include "s_conn.hpp"
 #include <iostream>
 #include <log/log.hpp>
@@ -14,19 +15,25 @@ int main()
   auto server = uv::Tcp{loop.loop()};
   server.bind("0.0.0.0", DEFAULT_PORT, 0);
   std::vector<std::unique_ptr<Conn>> conns;
-  server.listen(DEFAULT_BACKLOG, [&conns](int status, uv::Tcp conn) {
+  MasterSpeaker masterSpeaker;
+  server.listen(DEFAULT_BACKLOG, [&conns, &masterSpeaker](int status, uv::Tcp conn) {
     if (status < 0)
     {
       LOG("New connection error:", uv_strerror(status));
       return;
     }
 
-    conns.emplace_back(std::make_unique<Conn>(std::move(conn), [&](Conn *self) {
-      if (auto it = std::find_if(
-            std::begin(conns), std::end(conns), [self](const auto &x) { return self == x.get(); });
-          it != std::end(conns))
-        conns.erase(it);
-    }));
+    conns.emplace_back(std::make_unique<Conn>(
+      std::move(conn),
+      [&conns, &masterSpeaker](Conn *self) {
+        masterSpeaker.lock();
+        if (auto it = std::find_if(
+              std::begin(conns), std::end(conns), [self](const auto &x) { return self == x.get(); });
+            it != std::end(conns))
+          conns.erase(it);
+        masterSpeaker.unlock();
+      },
+      masterSpeaker));
   });
 
   LOG("Server is running");

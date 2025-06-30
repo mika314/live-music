@@ -1,14 +1,18 @@
 #include "s_conn.hpp"
+#include "master_speaker.hpp"
 #include "s_speaker.hpp"
 #include "s_synth.hpp"
 #include <log/log.hpp>
 
-Conn::Conn(uv::Tcp &&aTcp, std::function<auto(Conn *self)->void> destroy) : tcp(std::move(aTcp))
+Conn::Conn(uv::Tcp &&aTcp, std::function<auto(Conn *self)->void> destroy, MasterSpeaker &aMasterSpeaker)
+  : tcp(std::move(aTcp)), masterSpeaker(aMasterSpeaker)
 {
   tcp.readStart([this, destroy = std::move(destroy)](int status, std::string aBuf) {
     if (status < 0)
     {
       LOG(status);
+      for (auto &entity : entities)
+        masterSpeaker.get().orphanage.emplace_back(std::move(entity.second));
       destroy(this);
       return;
     }
@@ -76,7 +80,7 @@ auto Conn::ctor(int32_t rspId, Args &&...args)
 auto Conn::operator()(msg::Speaker_CtorReq v) -> void
 {
   LOG("speaker ctor", v.id);
-  ctor<Speaker>(v.id);
+  ctor<Speaker>(v.id, masterSpeaker.get());
 }
 
 auto Conn::operator()(msg::Synth_CtorReq v) -> void

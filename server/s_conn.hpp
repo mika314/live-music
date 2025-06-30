@@ -1,5 +1,6 @@
 #pragma once
 #include "s_entity.hpp"
+#include "s_speaker.hpp"
 #include <functional>
 #include <shared/consts.hpp>
 #include <shared/proto.hpp>
@@ -8,7 +9,7 @@
 class Conn
 {
 public:
-  Conn(uv::Tcp &&, std::function<auto(Conn *)->void> destroy);
+  Conn(uv::Tcp &&, std::function<auto(Conn *)->void> destroy, MasterSpeaker &);
   auto operator()(msg::Log) -> void;
   auto operator()(msg::NowReq) -> void;
   auto operator()(msg::SetBpm) -> void;
@@ -19,6 +20,7 @@ public:
 
 private:
   uv::Tcp tcp;
+  std::reference_wrapper<MasterSpeaker> masterSpeaker;
   std::string buf;
   int32_t sz = -1;
   auto processPack(std::string_view) -> void;

@@ -7,14 +7,12 @@ namespace uv
 {
   Tcp::Tcp(uv_loop_t *loop) : socket(std::make_unique<uv_tcp_t>())
   {
-    LOG(this, "Tcp ctor");
     uv_tcp_init(loop, socket.get());
     socket->data = this;
   }
 
   auto Tcp::readStart(ReadCb cb) -> int
   {
-    LOG(this, "readStart socket:", socket);
     if (!socket)
     {
       LOG(this, "Uninitialized TCP connection");

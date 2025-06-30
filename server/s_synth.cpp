@@ -64,3 +64,8 @@ auto Synth::osc(float freq) -> float
   case OscType::triangle: return 1.f - 4.f * std::fabs(frac - .5f);
   }
 }
+
+auto Synth::isBusy() const -> bool
+{
+  return !notes.empty();
+}

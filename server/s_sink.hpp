@@ -1,9 +1,8 @@
 #pragma once
-#include "s_entity.hpp"
 #include <shared/consts.hpp>
 #include <unordered_set>
 
-class Sink : public Entity
+class Sink
 {
 public:
   auto add(class Source *) -> void;
