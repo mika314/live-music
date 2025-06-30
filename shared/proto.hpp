@@ -1,5 +1,6 @@
 #pragma once
 
+#include "envelope.hpp"
 #include "note.hpp"
 #include <ser/macro.hpp>
 #include <ser/proto.hpp>
@@ -55,7 +56,19 @@ namespace msg
     Note note;
     SER_PROPS(id, note);
   };
+
+  struct Synth_Envelope
+  {
+    int32_t id;
+    Envelope envelope;
+    SER_PROPS(id, envelope);
+  };
 } // namespace msg
 
-using ProtoC2S =
-  Proto<msg::Log, msg::NowReq, msg::SetBpm, msg::Speaker_CtorReq, msg::Synth_CtorReq, msg::Synth_Note>;
+using ProtoC2S = Proto<msg::Log,
+                       msg::NowReq,
+                       msg::SetBpm,
+                       msg::Speaker_CtorReq,
+                       msg::Synth_CtorReq,
+                       msg::Synth_Note,
+                       msg::Synth_Envelope>;

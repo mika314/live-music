@@ -14,6 +14,7 @@ public:
   auto operator()(msg::SetBpm) -> void;
   auto operator()(msg::Speaker_CtorReq) -> void;
   auto operator()(msg::Synth_CtorReq) -> void;
+  auto operator()(msg::Synth_Envelope) -> void;
   auto operator()(msg::Synth_Note) -> void;
 
 private:

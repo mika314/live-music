@@ -17,17 +17,24 @@ auto main() -> int
 
   auto speaker = Speaker{};
   auto synth = Synth{speaker};
-  for (auto i = 0; i < 16; ++i)
+  synth(Envelope{.attack = .1, .decay = .5, .sustain = -20, .release = .5});
+  for (auto i = 0; i < 4; ++i)
   {
-    synth(Note{.n = 0, .dur = 0.5, .vel = 1});
+    synth(Note{.n = 60 + 0, .dur = 1, .vel = -20});
+    synth(Note{.n = 60 + 4, .dur = 1, .vel = -20});
+    synth(Note{.n = 60 + 7, .dur = 1, .vel = -20});
     delay(1);
-    synth(Note{.n = 5, .dur = 0.5, .vel = 1});
+    synth(Note{.n = 60 + 0, .dur = 1, .vel = -20});
+    synth(Note{.n = 60 + 4, .dur = 1, .vel = -20});
+    synth(Note{.n = 60 + 7, .dur = 1, .vel = -20});
     delay(1);
-    synth(Note{.n = 7, .dur = 0.5, .vel = 1});
+    synth(Note{.n = 60 + 0, .dur = 1, .vel = -20});
+    synth(Note{.n = 60 + 4, .dur = 1, .vel = -20});
+    synth(Note{.n = 60 + 7, .dur = 1, .vel = -20});
     delay(1);
-    synth(Note{.n = 0, .dur = 0.25, .vel = 0.5});
+    synth(Note{.n = 60, .dur = .5, .vel = -20});
     delay(0.5);
-    synth(Note{.n = 0, .dur = 0.25, .vel = .7});
+    synth(Note{.n = 60, .dur = .5, .vel = -20});
     delay(0.5);
   }
 

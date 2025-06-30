@@ -98,3 +98,19 @@ auto Conn::operator()(msg::Synth_Note v) -> void
   auto &synth = *dynamic_cast<Synth *>(entities[v.id].get());
   synth(v.note);
 }
+
+auto Conn::operator()(msg::Synth_Envelope v) -> void
+{
+  LOG("synth id:",
+      v.id,
+      "attack:",
+      v.envelope.attack,
+      "decay:",
+      v.envelope.decay,
+      "sustain:",
+      v.envelope.sustain,
+      "release:",
+      v.envelope.release);
+  auto &synth = *dynamic_cast<Synth *>(entities[v.id].get());
+  synth(v.envelope);
+}
