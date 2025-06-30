@@ -130,7 +130,8 @@ namespace uv
   {
     if (nread < 0)
     {
-      LOG(__func__, "error:", uv_err_name(static_cast<int>(nread)));
+      if (nread != UV_EOF)
+        LOG(__func__, "error:", uv_err_name(static_cast<int>(nread)), nread);
       readCb(static_cast<int>(nread), std::string{});
       return;
     }
@@ -274,7 +275,6 @@ namespace uv
   {
     if (socket)
     {
-      LOG(this, "Graceful disconnect");
       socket->data = nullptr;
       auto rawSocket = socket.release();
       uv_read_stop((uv_stream_t *)rawSocket);

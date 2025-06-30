@@ -25,7 +25,7 @@ private:
   int32_t sz = -1;
   auto processPack(std::string_view) -> void;
   std::unordered_map<int32_t, std::unique_ptr<Entity>> entities;
-  float bpm = DefaultBpm;
+  double bpm = DefaultBpm;
 
   auto send(auto id, auto rsp);
   template <typename Entity, typename... Args>

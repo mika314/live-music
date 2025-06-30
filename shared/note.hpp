@@ -4,8 +4,8 @@
 
 struct Note
 {
-  float n = 60;
-  float dur = 1;
-  float vel = -6;
+  double n = 60;
+  double dur = 1;
+  double vel = -6;
   SER_PROPS(n, dur, vel);
 };

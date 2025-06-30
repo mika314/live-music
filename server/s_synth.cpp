@@ -4,7 +4,7 @@
 #include <log/log.hpp>
 #include <shared/consts.hpp>
 
-Synth::Synth(const float &aBpm, class Sink &sink, OscType aOscType, Envelope aEnvelope)
+Synth::Synth(const double &aBpm, class Sink &sink, OscType aOscType, Envelope aEnvelope)
   : Source(sink), bpm(aBpm), oscType(aOscType), envelope(aEnvelope)
 {
 }

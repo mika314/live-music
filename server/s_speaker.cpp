@@ -5,12 +5,12 @@ Speaker::Speaker(MasterSpeaker &aMasterSpeaker) : Source(aMasterSpeaker), master
 {
 }
 
-auto Speaker::lock() -> void
+auto Speaker::lock() const -> void
 {
   masterSpeaker.get().lock();
 }
 
-auto Speaker::unlock() -> void
+auto Speaker::unlock() const -> void
 {
   masterSpeaker.get().unlock();
 }

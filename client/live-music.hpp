@@ -2,11 +2,16 @@
 #include "conn.hpp"
 #include "speaker.hpp"
 #include "synth.hpp"
+#include <chrono>
+#include <shared/consts.hpp>
 
 auto log(std::string v) -> void;
 auto now() -> int;
-auto setBpm(float) -> void;
-auto delay(float) -> void;
+auto setBpm(double) -> void;
+auto delay(double) -> void;
+auto newThread() -> void;
+auto getCurTime() -> decltype(std::chrono::steady_clock::now());
+auto thread(std::function<auto()->void>) -> std::thread *;
 
 static int C = 0;
 static int Cs = 1;

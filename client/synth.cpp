@@ -1,5 +1,6 @@
 #include "synth.hpp"
 #include "conn.hpp"
+#include "live-music.hpp"
 #include "sink.hpp"
 
 Synth::Synth(Sink &sink, CtorParams params)
@@ -11,6 +12,8 @@ Synth::Synth(Sink &sink, CtorParams params)
 
 auto Synth::operator()(Note v) -> void
 {
+  if (std::chrono::steady_clock::now() > getCurTime() + std::chrono::milliseconds(100))
+    return;
   send(msg::Synth_Note{.id = getId(), .note = std::move(v)});
 }
 

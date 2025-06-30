@@ -49,7 +49,7 @@ namespace msg
 
   struct SetBpm
   {
-    float v;
+    double v;
     SER_PROPS(v);
   };
 

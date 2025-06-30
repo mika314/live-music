@@ -2,7 +2,7 @@
 #include "consts.hpp"
 #include <cmath>
 
-auto Envelope::amp(float t, float duration) const -> float
+auto Envelope::amp(double t, double duration) const -> double
 {
   if (t < attack && t < duration)
     return t / attack;

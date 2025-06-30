@@ -10,7 +10,6 @@ Conn::Conn(uv::Tcp &&aTcp, std::function<auto(Conn *self)->void> destroy, Master
   tcp.readStart([this, destroy = std::move(destroy)](int status, std::string aBuf) {
     if (status < 0)
     {
-      LOG(status);
       for (auto &entity : entities)
         masterSpeaker.get().orphanage.emplace_back(std::move(entity.second));
       destroy(this);
@@ -65,7 +64,7 @@ auto Conn::send(auto id, auto rsp)
 auto Conn::operator()(msg::NowReq v) -> void
 {
   LOG("now request", v.id);
-  send(v.id, msg::NowRsp{.samples = 314});
+  send(v.id, msg::NowRsp{.samples = masterSpeaker.get().getSamplesProcessed()});
 }
 
 template <typename E, typename... Args>

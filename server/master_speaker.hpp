@@ -7,12 +7,14 @@ class MasterSpeaker : public Sink
 {
 public:
   MasterSpeaker();
-  auto lock() -> void final;
-  auto unlock() -> void final;
+  auto lock() const -> void final;
+  auto unlock() const -> void final;
+  auto getSamplesProcessed() const -> int;
   std::vector<std::unique_ptr<Entity>> orphanage;
 
 private:
   SDL_AudioSpec want;
   SDL_AudioSpec have;
   sdl::Audio audio;
+  int samplesProcessed = 0;
 };

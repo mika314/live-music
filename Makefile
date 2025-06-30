@@ -2,7 +2,7 @@ all: client server
 
 client: FORCE
 	echo Entering directory \`client\'
-	cd client; coddle
+	cd client; coddle && ( killall client-running || echo ok )
 	echo Leaving directory \`client\'
 
 server: FORCE

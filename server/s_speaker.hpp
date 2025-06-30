@@ -7,8 +7,8 @@ class Speaker : public Sink, public Source, public Entity
 {
 public:
   Speaker(class MasterSpeaker &);
-  auto lock() -> void final;
-  auto unlock() -> void final;
+  auto lock() const -> void final;
+  auto unlock() const -> void final;
   auto pull(int samples) -> std::vector<float> final;
   auto isBusy() const -> bool final;
 

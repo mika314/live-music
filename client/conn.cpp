@@ -1,5 +1,4 @@
 #include "conn.hpp"
-#include <log/log.hpp>
 
 Conn::Conn()
   : thread([this]() {
@@ -7,19 +6,15 @@ Conn::Conn()
         uv::Uv loop;
         loop.connect("localhost", "7000", [&loop, this](int status, uv::Tcp aConn) {
           if (status != 0)
-          {
-            LOG(status);
             return;
-          }
-          LOG("connected");
           conn = std::move(aConn);
           q = std::make_unique<Q>(loop, [this](std::string v) {
             if (v.empty())
               return;
             const auto sz = static_cast<int32_t>(v.size());
             conn.write(std::string{reinterpret_cast<const char *>(&sz),
-                                         reinterpret_cast<const char *>(&sz) + sizeof(sz)},
-                             [](int /*status*/) {});
+                                   reinterpret_cast<const char *>(&sz) + sizeof(sz)},
+                       [](int /*status*/) {});
             conn.write(std::string{v.data(), v.data() + sz}, [](int /*status*/) {});
           });
           isReady = true;
@@ -71,10 +66,7 @@ auto Conn::getNextId() -> int
 auto Conn::onRead(int status, std::string v) -> void
 {
   if (status != 0)
-  {
-    LOG("read error:", status);
     return;
-  }
   buf += std::move(v);
   for (;;)
   {
