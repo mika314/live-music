@@ -4,6 +4,7 @@
 #include <log/log.hpp>
 #include <sdlpp/sdlpp.hpp>
 #include <shared/uv.hpp>
+#include <thread>
 
 #define DEFAULT_PORT 7000
 #define DEFAULT_BACKLOG 128
@@ -35,6 +36,8 @@ int main()
       },
       masterSpeaker));
   });
+
+  auto t = std::thread([]() { system("cd ../client; ./client.sh"); });
 
   LOG("Server is running");
   for (;;)
