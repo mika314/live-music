@@ -6,6 +6,10 @@ struct Note
 {
   double n = 60;
   double dur = 1;
-  double vel = -6;
+  double vel = -12;
   SER_PROPS(n, dur, vel);
 };
+
+auto operator+(Note, double) -> Note;
+auto operator+(double, Note) -> Note;
+auto operator+=(Note &, double) -> Note &;

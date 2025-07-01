@@ -48,3 +48,27 @@ auto thread(std::function<auto()->void> v) -> std::thread *
     v();
   });
 }
+
+auto createPluck(Sink &v) -> Synth
+{
+  return Synth{
+    v,
+    Synth::CtorParams{.oscType = OscType::sin,
+                      .envelope = Envelope{.attack = .01, .decay = .02, .sustain = -30, .release = 1}}};
+}
+
+auto createBass(Sink &v) -> Synth
+{
+  return Synth{
+    v,
+    Synth::CtorParams{.oscType = OscType::triangle,
+                      .envelope = Envelope{.attack = .01, .decay = 0, .sustain = 0, .release = .5}}};
+}
+
+auto createPad(Sink &v) -> Synth
+{
+  return Synth{
+    v,
+    Synth::CtorParams{.oscType = OscType::sin,
+                      .envelope = Envelope{.attack = .25, .decay = 0, .sustain = 0, .release = .25}}};
+}
