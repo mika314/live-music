@@ -12,6 +12,15 @@ auto Envelope::amp(double t, double duration) const -> double
   if (t < duration)
     return sus;
   if (t < duration + release)
-    return sus * (1. - (t - duration) / release);
+  {
+    auto a = [=]() {
+      if (duration < attack)
+        return duration / attack;
+      if (duration < attack + decay)
+        return (1. - (duration - attack) / decay) * (1 - sus) + sus;
+      return sus;
+    }();
+    return a * (1. - (t - duration) / release);
+  }
   return 0;
 }

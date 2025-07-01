@@ -10,8 +10,10 @@ MasterSpeaker::MasterSpeaker()
       const auto samples = len / sizeof(float) / ChN;
       for (auto &s : sources)
       {
+        if (!s->isBusy())
+          continue;
         const auto chunk = s->pull(samples);
-        for (auto i = 0U; i < samples * ChN; ++i)
+        for (auto i = 0U; i < std::min(samples * ChN, chunk.size()); ++i)
           reinterpret_cast<float *>(stream)[i] += chunk[i];
       }
       samplesProcessed += samples;
