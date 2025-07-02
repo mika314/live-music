@@ -13,7 +13,7 @@ public:
 
 private:
   std::reference_wrapper<const double> bpm;
-  std::vector<float> sample;
+  std::reference_wrapper<std::vector<float>> sample;
   int pos = 0;
   struct N
   {

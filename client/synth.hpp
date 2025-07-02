@@ -15,4 +15,6 @@ public:
   Synth(class Sink &, CtorParams = CtorParams{});
   auto operator()(Note) -> void;
   auto operator()(Envelope) -> void;
+  auto maj(Note) -> void;
+  auto min(Note) -> void;
 };

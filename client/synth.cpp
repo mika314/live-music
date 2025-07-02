@@ -21,3 +21,17 @@ auto Synth::operator()(Envelope v) -> void
 {
   send(msg::Synth_Envelope{.id = getId(), .envelope = std::move(v)});
 }
+
+auto Synth::maj(Note v) -> void
+{
+  (*this)(v);
+  (*this)(v + III);
+  (*this)(v + V);
+}
+
+auto Synth::min(Note v) -> void
+{
+  (*this)(v);
+  (*this)(v + iii);
+  (*this)(v + V);
+}

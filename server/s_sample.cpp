@@ -1,11 +1,11 @@
 #include "s_sample.hpp"
-#include "load-audio.hpp"
 #include "s_sink.hpp"
+#include "sample-lib.hpp"
 #include <cmath>
 #include <shared/consts.hpp>
 
 Sample::Sample(const double &aBpm, class Sink &sink, std::filesystem::path path)
-  : Source(sink), bpm(aBpm), sample(loadAudio(std::move(path)))
+  : Source(sink), bpm(aBpm), sample(SampleLib::getInst()(std::move(path)))
 {
 }
 
@@ -27,8 +27,9 @@ auto Sample::pull(int samples) -> std::vector<float>
       for (const auto &n : notes)
       {
         const auto idx = pos - n.start;
-        a += (idx >= 0 && idx < static_cast<int>(sample.size())) ? powf(10.f, n.vel / 20.f) * sample[idx]
-                                                                 : 0.0f;
+        a += (idx >= 0 && idx < static_cast<int>(sample.get().size()))
+               ? powf(10.f, n.vel / 20.f) * sample.get()[idx]
+               : 0.0f;
       }
       return a;
     }();
@@ -36,7 +37,7 @@ auto Sample::pull(int samples) -> std::vector<float>
     r.push_back(a);
 
     for (auto it = std::begin(notes); it != std::end(notes);)
-      if (pos - it->start >= static_cast<int>(sample.size()))
+      if (pos - it->start >= static_cast<int>(sample.get().size()))
         it = notes.erase(it);
       else
         ++it;
