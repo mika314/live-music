@@ -66,6 +66,21 @@ namespace msg
     Envelope envelope;
     SER_PROPS(id, envelope);
   };
+
+  struct Sample_CtorReq
+  {
+    int32_t id;
+    int32_t sinkId;
+    std::string path;
+    SER_PROPS(id, sinkId, path);
+  };
+
+  struct Sample_Play
+  {
+    int32_t id;
+    double vel;
+    SER_PROPS(id, vel);
+  };
 } // namespace msg
 
 using ProtoC2S = Proto<msg::Log,
@@ -74,4 +89,6 @@ using ProtoC2S = Proto<msg::Log,
                        msg::Speaker_CtorReq,
                        msg::Synth_CtorReq,
                        msg::Synth_Note,
-                       msg::Synth_Envelope>;
+                       msg::Synth_Envelope,
+                       msg::Sample_CtorReq,
+                       msg::Sample_Play>;

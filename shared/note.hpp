@@ -13,3 +13,5 @@ struct Note
 auto operator+(Note, double) -> Note;
 auto operator+(double, Note) -> Note;
 auto operator+=(Note &, double) -> Note &;
+auto operator-(Note, double) -> Note;
+auto operator-=(Note &, double) -> Note &;

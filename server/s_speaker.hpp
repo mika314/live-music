@@ -3,7 +3,7 @@
 #include "s_sink.hpp"
 #include "s_source.hpp"
 
-class Speaker : public Sink, public Source, public Entity
+class Speaker : public Sink, public Source
 {
 public:
   Speaker(class MasterSpeaker &);

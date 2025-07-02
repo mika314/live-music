@@ -72,3 +72,8 @@ auto createPad(Sink &v) -> Synth
     Synth::CtorParams{.oscType = OscType::sin,
                       .envelope = Envelope{.attack = .25, .decay = 0, .sustain = 0, .release = .25}}};
 }
+
+auto isLate() -> bool
+{
+  return std::chrono::steady_clock::now() > getCurTime() + std::chrono::milliseconds(100);
+}

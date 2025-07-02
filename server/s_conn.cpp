@@ -1,5 +1,6 @@
 #include "s_conn.hpp"
 #include "master_speaker.hpp"
+#include "s_sample.hpp"
 #include "s_speaker.hpp"
 #include "s_synth.hpp"
 #include <log/log.hpp>
@@ -116,4 +117,18 @@ auto Conn::operator()(msg::Synth_Envelope v) -> void
       v.envelope.release);
   auto &synth = *dynamic_cast<Synth *>(entities[v.id].get());
   synth(v.envelope);
+}
+
+auto Conn::operator()(msg::Sample_CtorReq v) -> void
+{
+  LOG("sample ctor", v.id, v.path);
+  auto &sink = *dynamic_cast<Sink *>(entities[v.sinkId].get());
+  ctor<Sample>(v.id, bpm, sink, std::filesystem::path{v.path});
+}
+
+auto Conn::operator()(msg::Sample_Play v) -> void
+{
+  LOG("sample id:", v.id, "vel:", v.vel);
+  auto &entity = *dynamic_cast<Sample *>(entities[v.id].get());
+  entity(v.vel);
 }

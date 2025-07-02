@@ -17,6 +17,8 @@ public:
   auto operator()(msg::Synth_CtorReq) -> void;
   auto operator()(msg::Synth_Envelope) -> void;
   auto operator()(msg::Synth_Note) -> void;
+  auto operator()(msg::Sample_CtorReq) -> void;
+  auto operator()(msg::Sample_Play) -> void;
 
 private:
   uv::Tcp tcp;

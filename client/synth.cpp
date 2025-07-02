@@ -12,7 +12,7 @@ Synth::Synth(Sink &sink, CtorParams params)
 
 auto Synth::operator()(Note v) -> void
 {
-  if (std::chrono::steady_clock::now() > getCurTime() + std::chrono::milliseconds(100))
+  if (isLate())
     return;
   send(msg::Synth_Note{.id = getId(), .note = std::move(v)});
 }

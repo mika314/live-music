@@ -1,5 +1,6 @@
 #pragma once
 #include "conn.hpp"
+#include "sample.hpp"
 #include "speaker.hpp"
 #include "synth.hpp"
 #include <chrono>
@@ -15,6 +16,7 @@ auto newThread() -> void;
 auto now() -> int;
 auto setBpm(double) -> void;
 auto thread(std::function<auto()->void>) -> std::thread *;
+auto isLate() -> bool;
 
 static auto C = Note{.n = 0};
 static auto Cs = Note{.n = 1};
