@@ -6,16 +6,11 @@ MasterSpeaker::MasterSpeaker()
   : want{.freq = SampleRate, .format = AUDIO_F32LSB, .channels = ChN, .samples = 1024},
     audio(nullptr, false, &want, &have, 0, [this](Uint8 *stream, int len) {
       lock();
-      memset(stream, 0, len);
       const auto samples = len / sizeof(float) / ChN;
-      for (auto &s : sources)
-      {
-        if (!s->isBusy())
-          continue;
-        const auto chunk = s->pull(samples);
-        for (auto i = 0U; i < std::min(samples * ChN, chunk.size()); ++i)
-          reinterpret_cast<float *>(stream)[i] += chunk[i];
-      }
+      const auto r = mix(samples);
+      for (auto i = 0U; i < std::min(samples * ChN, r.size()); ++i)
+        reinterpret_cast<float *>(stream)[i] = r[i];
+
       samplesProcessed += samples;
 
       for (auto it = std::begin(orphanage); it != std::end(orphanage);)

@@ -32,3 +32,15 @@ auto operator-=(Note &x, double y) -> Note &
   x.n -= y;
   return x;
 }
+
+auto Note::setDur(double v) -> Note &
+{
+  dur = v;
+  return *this;
+}
+
+auto Note::setVel(double v) -> Note &
+{
+  vel = v;
+  return *this;
+}

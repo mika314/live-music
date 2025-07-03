@@ -56,8 +56,8 @@ namespace msg
   struct Synth_Note
   {
     int32_t id;
-    Note note;
-    SER_PROPS(id, note);
+    Note v;
+    SER_PROPS(id, v);
   };
 
   struct Synth_Envelope
@@ -81,6 +81,34 @@ namespace msg
     double vel;
     SER_PROPS(id, vel);
   };
+
+  struct Source_SetGain
+  {
+    int32_t id;
+    double v;
+    SER_PROPS(id, v);
+  };
+
+  struct Source_SetPan
+  {
+    int32_t id;
+    double v;
+    SER_PROPS(id, v);
+  };
+
+  struct Reverb_CtorReq
+  {
+    int32_t id;
+    int32_t sinkId;
+    SER_PROPS(id, sinkId);
+  };
+
+  struct Reverb_SetWet
+  {
+    int32_t id;
+    double v;
+    SER_PROPS(id, v);
+  };
 } // namespace msg
 
 using ProtoC2S = Proto<msg::Log,
@@ -91,4 +119,8 @@ using ProtoC2S = Proto<msg::Log,
                        msg::Synth_Note,
                        msg::Synth_Envelope,
                        msg::Sample_CtorReq,
-                       msg::Sample_Play>;
+                       msg::Sample_Play,
+                       msg::Source_SetGain,
+                       msg::Source_SetPan,
+                       msg::Reverb_CtorReq,
+                       msg::Reverb_SetWet>;

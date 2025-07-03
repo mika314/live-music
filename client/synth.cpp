@@ -4,7 +4,7 @@
 #include "sink.hpp"
 
 Synth::Synth(Sink &sink, CtorParams params)
-  : Entity(ctor(msg::Synth_CtorReq{.sinkId = sink.getId(),
+  : Source(ctor(msg::Synth_CtorReq{.sinkId = sink.getId(),
                                    .oscType = params.oscType,
                                    .envelope = std::move(params.envelope)}))
 {
@@ -14,7 +14,7 @@ auto Synth::operator()(Note v) -> void
 {
   if (isLate())
     return;
-  send(msg::Synth_Note{.id = getId(), .note = std::move(v)});
+  send(msg::Synth_Note{.id = getId(), .v = std::move(v)});
 }
 
 auto Synth::operator()(Envelope v) -> void

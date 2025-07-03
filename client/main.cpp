@@ -3,20 +3,31 @@
 auto main() -> int
 {
   setBpm(120);
-  auto speaker = Speaker{};
+#if 1
+  auto tmp = Speaker{};
+  auto master = Reverb{tmp};
+  master.wet(.15);
+#else
+  auto master = Speaker{};
+#endif
   thread([&]() {
     auto loop =
-      Sample{speaker, "samples/stargate-sample-pack/fugue-state-audio/loops/120-filterhats.wav"};
+      Sample{master, "samples/stargate-sample-pack/fugue-state-audio/loops/120-filterhats.wav"};
+
     auto kick =
-      Sample{speaker, "samples/stargate-sample-pack/karoryfer/kicks/kick_Szpaderski_24_dampened.wav"};
+      Sample{master, "samples/stargate-sample-pack/karoryfer/kicks/kick_Szpaderski_24_dampened.wav"};
+
     auto snare =
-      Sample{speaker, "samples/stargate-sample-pack/karoryfer/snares/snare_Pearl_alumunum_14x8.wav"};
+      Sample{master, "samples/stargate-sample-pack/karoryfer/snares/snare_Pearl_alumunum_14x8.wav"};
+    snare.gain(-5);
+
     auto clap = Sample{
-      speaker, "samples/stargate-sample-pack/freesound/drums/clap/388042__sami-kullstrom__clap.wav"};
+      master, "samples/stargate-sample-pack/freesound/drums/clap/388042__sami-kullstrom__clap.wav"};
+    clap.gain(-10);
 
     for (;;)
     {
-      // loop(-35);
+      //     loop(-35);
       for (auto i = 0; i < 4 * 4; ++i)
       {
         kick();
@@ -25,108 +36,71 @@ auto main() -> int
           snare(-20);
           clap(-15);
         }
-        delay(Eighth);
+        delay(d8);
         if (i % 2 == 1)
           clap(-25);
-        delay(Eighth);
+        delay(d8);
       }
     }
   });
 
-  thread([&]() {
-    auto hat = Sample(speaker, "samples/stargate-sample-pack/karoryfer/hihats/hihat_BRD_tight.wav");
-    for (;;)
-    {
-      hat(-25 - rand() % 6);
-      delay(Eighth);
-    }
-  });
+  // thread([&]() {
+  //   auto hat = Sample(master, "samples/stargate-sample-pack/karoryfer/hihats/hihat_BRD_tight.wav");
+  //   hat.gain(-5);
+  //   for (;;)
+  //   {
+  //     hat(-25 - rand() % 6);
+  //     if (rand() % 8 != 0)
+  //       delay(d8);
+  //     else
+  //     {
+  //       delay(d16);
+  //       hat(-25 - rand() % 6);
+  //       delay(d16);
+  //     }
+  //   }
+  // });
 
-  thread([&]() {
-    auto bass = createBass(speaker);
-    for (;;)
-    {
-      for (auto nn : {C, C, C, C, D, D, D, D, F, F, F, F, E, E, E, E})
-      {
-        auto n = nn + O2;
-        n.vel = -25;
-        n.dur = Eighth;
-        bass(n);
-        delay(Quarter);
-      }
-    }
-  });
+  // thread([&]() {
+  //   auto bass = createBass(master);
+  //   // clang-format off
+  //   for (;;)
+  //     bass.seq(C.setVel(-25).setDur(d8) + O2,
+  //              I,   d4, I,   d4, I,   d4, I,   d4,
+  //              II,  d4, II,  d4, II,  d4, II,  d4,
+  //              IV,  d4, IV,  d4, IV,  d4, IV,  d4,
+  //              III, d4, III, d4, III, d4, III, d4);
+  //   // clang-format on
+  // });
 
+  // thread([&]() {
+  //   auto pad = createPad(master);
+  //   for (;;)
+  //   {
+  //     pad.chord(C.setVel(-25).setDur(Bar) + O3, I, III, V, VII);
+  //     delay(Bar);
+  //     pad.chord(D.setVel(-25).setDur(Bar) + O3, I, iii, V, vii);
+  //     delay(Bar);
+  //     pad.chord(F.setVel(-25).setDur(Bar) + O3, I, III, V, VII);
+  //     delay(Bar);
+  //     pad.chord(E.setVel(-25).setDur(Bar) + O3, I, iii, V, vii);
+  //     delay(Bar);
+  //   }
+  // });
   thread([&]() {
-    auto pad = createPad(speaker);
+    auto reverb = Reverb{master};
+    reverb.wet(0.2);
+    reverb.gain(-7);
+    auto pluck = createPluck(reverb);
     for (;;)
     {
-      {
-        auto n = C + O3;
-        n.vel = -25;
-        n.dur = Whole;
-        pad.maj(n);
-        delay(Whole);
-      }
-      {
-        auto n = D + O3;
-        n.vel = -25;
-        n.dur = Whole;
-        pad.min(n);
-        delay(Whole);
-      }
-      {
-        auto n = F + O3;
-        n.vel = -25;
-        n.dur = Whole;
-        pad.maj(n);
-        delay(Whole);
-      }
-      {
-        auto n = E + O3;
-        n.vel = -25;
-        n.dur = Whole;
-        pad.min(n);
-        delay(Whole);
-      }
-    }
-  });
-  thread([&]() {
-    auto pluck = createPluck(speaker);
-    for (;;)
-    {
-      for (auto n : {C, D, E, F, G, A, B, C + O})
-      {
-        n += O4;
-        n.vel = -6;
-        n.dur = Eighth;
-        pluck(n);
-        delay(Eighth);
-      }
-      for (auto n : {D, E, F, G, A, B, C + O, D + O})
-      {
-        n += O4;
-        n.vel = -6;
-        n.dur = Eighth;
-        pluck(n);
-        delay(Eighth);
-      }
-      for (auto n : {F, G, A, B, C + O, D + O, E + O, F + O})
-      {
-        n += O4;
-        n.vel = -6;
-        n.dur = Eighth;
-        pluck(n);
-        delay(Eighth);
-      }
-      for (auto n : {E, F, G, A, B, C + O, D + O, E + O})
-      {
-        n += O4;
-        n.vel = -6;
-        n.dur = Eighth;
-        pluck(n);
-        delay(Eighth);
-      }
+      // clang-format off
+      pluck.seq(C.setVel(0).setDur(d16) + O4,
+                I,   d8, II,  d8, III, d8, IV,  d8, V,   d8, VI,     d8, VII,     d8, O,       d8,
+                II,  d8, III, d8, IV,  d8, V,   d8, VI,  d8, VII,    d8, O,       d8, O + II,  d8,
+                IV,  d8, V,   d8, VI,  d8, VII, d8, O,   d8, O + II, d8, O + III, d8, O + IV,  d8,
+                III, d8, IV,  d8, V,   d8, VI,  d8, VII, d8, O,      d8, O + II,  d8, O + III, d8);
+      // clang-format on
     }
   });
 

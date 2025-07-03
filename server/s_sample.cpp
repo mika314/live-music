@@ -2,22 +2,26 @@
 #include "s_sink.hpp"
 #include "sample-lib.hpp"
 #include <cmath>
+#include <log/log.hpp>
 #include <shared/consts.hpp>
 
-Sample::Sample(const double &aBpm, class Sink &sink, std::filesystem::path path)
-  : Source(sink), bpm(aBpm), sample(SampleLib::getInst()(std::move(path)))
+Sample::Sample(const double &aBpm, class Sink &sink, std::filesystem::path aPath)
+  : Source(sink), bpm(aBpm), path(std::move(aPath)), sample(SampleLib::getInst()(path))
 {
+  isReady = true;
 }
 
 auto Sample::isBusy() const -> bool
 {
   sink.get().lock();
-  return !notes.empty();
+  return !notes.empty() && isReady;
   sink.get().unlock();
 }
 
 auto Sample::pull(int samples) -> std::vector<float>
 {
+  if (!isReady)
+    return {};
   auto r = std::vector<float>{};
   r.reserve(samples * ChN);
   for (auto i = 0; i < ChN * samples; ++i)
@@ -47,6 +51,7 @@ auto Sample::pull(int samples) -> std::vector<float>
 
 auto Sample::operator()(double vel) -> void
 {
+  LOG(path.filename(), vel);
   sink.get().lock();
   notes.emplace_back(N{.vel = vel, .start = pos});
   sink.get().unlock();

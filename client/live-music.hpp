@@ -1,5 +1,6 @@
 #pragma once
 #include "conn.hpp"
+#include "reverb.hpp"
 #include "sample.hpp"
 #include "speaker.hpp"
 #include "synth.hpp"
@@ -42,6 +43,7 @@ static auto iii = 3.;
 static auto IV = 5.;
 static auto V = 7.;
 static auto VI = 9.;
+static auto vii = 10.;
 static auto VII = 11.;
 static auto O = 12.;
 static auto O0 = 12.;
@@ -57,3 +59,9 @@ static auto Quarter = 1.;
 static auto Halth = 2.;
 static auto Whole = 4.;
 static auto Bar = 4.;
+static auto Rest = -1.0;
+static auto d16 = .25;
+static auto d8 = .5;
+static auto d4 = 1.;
+static auto d2 = 2.;
+static auto d1 = 4.;

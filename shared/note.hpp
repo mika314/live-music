@@ -8,6 +8,8 @@ struct Note
   double dur = 1;
   double vel = -12;
   SER_PROPS(n, dur, vel);
+  auto setDur(double) -> Note &;
+  auto setVel(double) -> Note &;
 };
 
 auto operator+(Note, double) -> Note;

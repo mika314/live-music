@@ -1,8 +1,8 @@
 #pragma once
-#include "entity.hpp"
+#include "source.hpp"
 #include <filesystem>
 
-class Sample : public Entity
+class Sample : public Source
 {
 public:
   Sample(class Sink &, std::filesystem::path);

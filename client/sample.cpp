@@ -4,7 +4,7 @@
 #include "sink.hpp"
 
 Sample::Sample(Sink &sink, std::filesystem::path path)
-  : Entity(ctor(msg::Sample_CtorReq{.sinkId = sink.getId(), .path = path.string()}))
+  : Source(ctor(msg::Sample_CtorReq{.sinkId = sink.getId(), .path = path.string()}))
 {
 }
 

@@ -17,17 +17,7 @@ auto Speaker::unlock() const -> void
 
 auto Speaker::pull(int samples) -> std::vector<float>
 {
-  auto r = std::vector<float>{};
-  for (auto &s : sources)
-  {
-    if (!s->isBusy())
-      continue;
-    r.resize(samples * ChN);
-    const auto chunk = s->pull(samples);
-    for (auto i = 0; i < samples * ChN; ++i)
-      r[i] += chunk[i];
-  }
-  return r;
+  return mix(samples);
 }
 
 auto Speaker::isBusy() const -> bool

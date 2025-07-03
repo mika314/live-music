@@ -12,13 +12,17 @@ public:
   Conn(uv::Tcp &&, std::function<auto(Conn *)->void> destroy, MasterSpeaker &);
   auto operator()(msg::Log) -> void;
   auto operator()(msg::NowReq) -> void;
+  auto operator()(msg::Reverb_CtorReq) -> void;
+  auto operator()(msg::Reverb_SetWet) -> void;
+  auto operator()(msg::Sample_CtorReq) -> void;
+  auto operator()(msg::Sample_Play) -> void;
   auto operator()(msg::SetBpm) -> void;
+  auto operator()(msg::Source_SetGain) -> void;
+  auto operator()(msg::Source_SetPan) -> void;
   auto operator()(msg::Speaker_CtorReq) -> void;
   auto operator()(msg::Synth_CtorReq) -> void;
   auto operator()(msg::Synth_Envelope) -> void;
   auto operator()(msg::Synth_Note) -> void;
-  auto operator()(msg::Sample_CtorReq) -> void;
-  auto operator()(msg::Sample_Play) -> void;
 
 private:
   uv::Tcp tcp;

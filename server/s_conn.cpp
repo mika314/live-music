@@ -1,5 +1,6 @@
 #include "s_conn.hpp"
 #include "master_speaker.hpp"
+#include "s_reverb.hpp"
 #include "s_sample.hpp"
 #include "s_speaker.hpp"
 #include "s_synth.hpp"
@@ -98,9 +99,9 @@ auto Conn::operator()(msg::SetBpm v) -> void
 
 auto Conn::operator()(msg::Synth_Note v) -> void
 {
-  LOG("synth id:", v.id, "note:", v.note.n, "dur:", v.note.dur, "vel:", v.note.vel);
+  LOG("synth id:", v.id, "note:", v.v.n, "dur:", v.v.dur, "vel:", v.v.vel);
   auto &synth = *dynamic_cast<Synth *>(entities[v.id].get());
-  synth(v.note);
+  synth(v.v);
 }
 
 auto Conn::operator()(msg::Synth_Envelope v) -> void
@@ -128,7 +129,31 @@ auto Conn::operator()(msg::Sample_CtorReq v) -> void
 
 auto Conn::operator()(msg::Sample_Play v) -> void
 {
-  LOG("sample id:", v.id, "vel:", v.vel);
   auto &entity = *dynamic_cast<Sample *>(entities[v.id].get());
   entity(v.vel);
+}
+
+auto Conn::operator()(msg::Source_SetGain v) -> void
+{
+  auto &entity = *dynamic_cast<Source *>(entities[v.id].get());
+  entity.gain = v.v;
+}
+
+auto Conn::operator()(msg::Source_SetPan v) -> void
+{
+  auto &entity = *dynamic_cast<Source *>(entities[v.id].get());
+  entity.pan = v.v;
+}
+
+auto Conn::operator()(msg::Reverb_CtorReq v) -> void
+{
+  LOG("Reverb ctor", v.id);
+  auto &sink = *dynamic_cast<Sink *>(entities[v.sinkId].get());
+  ctor<Reverb>(v.id, sink);
+}
+
+auto Conn::operator()(msg::Reverb_SetWet v) -> void
+{
+  auto &entity = *dynamic_cast<Reverb *>(entities[v.id].get());
+  entity.setWet(v.v);
 }
