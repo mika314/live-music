@@ -2,14 +2,15 @@
 #include "conn.hpp"
 #include "reverb.hpp"
 #include "sample.hpp"
+#include "send.hpp"
 #include "speaker.hpp"
 #include "synth.hpp"
 #include <chrono>
 #include <shared/consts.hpp>
 
-auto createBass(Sink &) -> Synth;
-auto createPad(Sink &v) -> Synth;
-auto createPluck(Sink &) -> Synth;
+auto createBass(Sink &, double gain = 0, double pan = 0) -> Synth;
+auto createPad(Sink &, double gain = 0, double pan = 0) -> Synth;
+auto createPluck(Sink &, double gain = 0, double pan = 0) -> Synth;
 auto delay(double) -> void;
 auto getCurTime() -> decltype(std::chrono::steady_clock::now());
 auto log(std::string v) -> void;

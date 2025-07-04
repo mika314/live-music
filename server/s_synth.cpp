@@ -4,12 +4,19 @@
 #include <log/log.hpp>
 #include <shared/consts.hpp>
 
-Synth::Synth(const double &aBpm, class Sink &sink, OscType aOscType, Envelope aEnvelope)
+Synth::Synth(const double &aBpm,
+             class Sink &sink,
+             double aGain,
+             double aPan,
+             OscType aOscType,
+             Envelope aEnvelope)
   : Source(sink), bpm(aBpm), oscType(aOscType), envelope(aEnvelope)
 {
+  gain = aGain;
+  pan = aPan;
 }
 
-auto Synth::pull(int samples) -> std::vector<float>
+auto Synth::internalPull(int samples) -> std::vector<float>
 {
   auto r = std::vector<float>{};
   r.reserve(samples * ChN);

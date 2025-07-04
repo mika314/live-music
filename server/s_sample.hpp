@@ -6,12 +6,13 @@
 class Sample : public Source
 {
 public:
-  Sample(const double &bpm, class Sink &, std::filesystem::path);
+  Sample(const double &bpm, class Sink &, std::filesystem::path, double gain, double pan);
   auto isBusy() const -> bool final;
-  auto pull(int samples) -> std::vector<float> final;
   auto operator()(double vel) -> void;
 
 private:
+  auto internalPull(int samples) -> std::vector<float> final;
+
   std::atomic_bool isReady = false;
   std::reference_wrapper<const double> bpm;
   std::filesystem::path path;

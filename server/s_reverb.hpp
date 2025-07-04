@@ -54,20 +54,23 @@ private:
 class Reverb : public Sink, public Source
 {
 public:
-  Reverb(class Sink &);
+  Reverb(class Sink &, double gain, double pan);
   auto lock() const -> void final;
   auto unlock() const -> void final;
-  auto pull(int samples) -> std::vector<float> final;
+  auto internalPull(int samples) -> std::vector<float> final;
   auto isBusy() const -> bool final;
   auto setWet(double) -> void;
 
 private:
-  float process(float in);
+  float processL(float in);
+  float processR(float in);
   void setMix(float wetLevel);
 
   std::reference_wrapper<Sink> sink;
-  std::vector<CombFilter> combs;
-  std::vector<AllpassFilter> allpasses;
+  std::vector<CombFilter> combsL;
+  std::vector<CombFilter> combsR;
+  std::vector<AllpassFilter> allpassesL;
+  std::vector<AllpassFilter> allpassesR;
   float wet = 0.3f;
   float dry = 0.7f;
 };

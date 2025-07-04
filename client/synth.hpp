@@ -7,15 +7,18 @@
 
 auto delay(double) -> void;
 
+struct SynthParams
+{
+  double gain = 0.0;
+  double pan = 0.0;
+  OscType oscType;
+  Envelope envelope;
+};
+
 class Synth : public Source
 {
 public:
-  struct CtorParams
-  {
-    OscType oscType;
-    Envelope envelope;
-  };
-  Synth(class Sink &, CtorParams = CtorParams{});
+  Synth(class Sink &, SynthParams = SynthParams{});
   auto operator()(Note) -> void;
 
   template <typename... Args>

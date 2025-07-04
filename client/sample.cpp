@@ -3,8 +3,9 @@
 #include "live-music.hpp"
 #include "sink.hpp"
 
-Sample::Sample(Sink &sink, std::filesystem::path path)
-  : Source(ctor(msg::Sample_CtorReq{.sinkId = sink.getId(), .path = path.string()}))
+Sample::Sample(Sink &sink, std::filesystem::path path, double gain, double pan)
+  : Source(
+      ctor(msg::Sample_CtorReq{.sinkId = sink.getId(), .path = path.string(), .gain = gain, .pan = pan}))
 {
 }
 
@@ -12,5 +13,5 @@ auto Sample::operator()(double v) -> void
 {
   if (isLate())
     return;
-  send(msg::Sample_Play{.id = getId(), .vel = v});
+  ::send(msg::Sample_Play{.id = getId(), .vel = v});
 }

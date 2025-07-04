@@ -3,8 +3,10 @@
 #include "live-music.hpp"
 #include "sink.hpp"
 
-Synth::Synth(Sink &sink, CtorParams params)
+Synth::Synth(Sink &sink, SynthParams params)
   : Source(ctor(msg::Synth_CtorReq{.sinkId = sink.getId(),
+                                   .gain = params.gain,
+                                   .pan = params.pan,
                                    .oscType = params.oscType,
                                    .envelope = std::move(params.envelope)}))
 {
@@ -14,12 +16,12 @@ auto Synth::operator()(Note v) -> void
 {
   if (isLate())
     return;
-  send(msg::Synth_Note{.id = getId(), .v = std::move(v)});
+  ::send(msg::Synth_Note{.id = getId(), .v = std::move(v)});
 }
 
 auto Synth::operator()(Envelope v) -> void
 {
-  send(msg::Synth_Envelope{.id = getId(), .envelope = std::move(v)});
+  ::send(msg::Synth_Envelope{.id = getId(), .envelope = std::move(v)});
 }
 
 auto Synth::maj(Note v) -> void

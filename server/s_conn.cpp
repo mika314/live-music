@@ -2,6 +2,7 @@
 #include "master_speaker.hpp"
 #include "s_reverb.hpp"
 #include "s_sample.hpp"
+#include "s_send.hpp"
 #include "s_speaker.hpp"
 #include "s_synth.hpp"
 #include <log/log.hpp>
@@ -81,14 +82,14 @@ auto Conn::ctor(int32_t rspId, Args &&...args)
 auto Conn::operator()(msg::Speaker_CtorReq v) -> void
 {
   LOG("speaker ctor", v.id);
-  ctor<Speaker>(v.id, masterSpeaker.get());
+  ctor<Speaker>(v.id, masterSpeaker.get(), v.gain, v.pan);
 }
 
 auto Conn::operator()(msg::Synth_CtorReq v) -> void
 {
   LOG("synth ctor", v.id);
   auto &sink = *dynamic_cast<Sink *>(entities[v.sinkId].get());
-  ctor<Synth>(v.id, bpm, sink, v.oscType, std::move(v.envelope));
+  ctor<Synth>(v.id, bpm, sink, v.gain, v.pan, v.oscType, std::move(v.envelope));
 }
 
 auto Conn::operator()(msg::SetBpm v) -> void
@@ -124,7 +125,7 @@ auto Conn::operator()(msg::Sample_CtorReq v) -> void
 {
   LOG("sample ctor", v.id, v.path);
   auto &sink = *dynamic_cast<Sink *>(entities[v.sinkId].get());
-  ctor<Sample>(v.id, bpm, sink, std::filesystem::path{v.path});
+  ctor<Sample>(v.id, bpm, sink, std::filesystem::path{v.path}, v.gain, v.pan);
 }
 
 auto Conn::operator()(msg::Sample_Play v) -> void
@@ -149,11 +150,18 @@ auto Conn::operator()(msg::Reverb_CtorReq v) -> void
 {
   LOG("Reverb ctor", v.id);
   auto &sink = *dynamic_cast<Sink *>(entities[v.sinkId].get());
-  ctor<Reverb>(v.id, sink);
+  ctor<Reverb>(v.id, sink, v.gain, v.pan);
 }
 
 auto Conn::operator()(msg::Reverb_SetWet v) -> void
 {
   auto &entity = *dynamic_cast<Reverb *>(entities[v.id].get());
   entity.setWet(v.v);
+}
+
+auto Conn::operator()(msg::Source_SendReq v) -> void
+{
+  auto &entity = *dynamic_cast<Source *>(entities[v.sourceId].get());
+  auto &sink = *dynamic_cast<Sink *>(entities[v.sinkId].get());
+  send(v.id, msg::Source_SendRsp{.id = entity.send(sink, v.gain, v.pan).id});
 }

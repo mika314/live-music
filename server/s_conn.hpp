@@ -23,6 +23,7 @@ public:
   auto operator()(msg::Synth_CtorReq) -> void;
   auto operator()(msg::Synth_Envelope) -> void;
   auto operator()(msg::Synth_Note) -> void;
+  auto operator()(msg::Source_SendReq) -> void;
 
 private:
   uv::Tcp tcp;

@@ -5,9 +5,15 @@
 #include <log/log.hpp>
 #include <shared/consts.hpp>
 
-Sample::Sample(const double &aBpm, class Sink &sink, std::filesystem::path aPath)
+Sample::Sample(const double &aBpm,
+               class Sink &sink,
+               std::filesystem::path aPath,
+               double aGain,
+               double aPan)
   : Source(sink), bpm(aBpm), path(std::move(aPath)), sample(SampleLib::getInst()(path))
 {
+  gain = aGain;
+  pan = aPan;
   isReady = true;
 }
 
@@ -18,7 +24,7 @@ auto Sample::isBusy() const -> bool
   sink.get().unlock();
 }
 
-auto Sample::pull(int samples) -> std::vector<float>
+auto Sample::internalPull(int samples) -> std::vector<float>
 {
   if (!isReady)
     return {};

@@ -6,12 +6,12 @@
 class Speaker : public Sink, public Source
 {
 public:
-  Speaker(class MasterSpeaker &);
+  Speaker(class MasterSpeaker &, double gain, double pan);
   auto lock() const -> void final;
   auto unlock() const -> void final;
-  auto pull(int samples) -> std::vector<float> final;
   auto isBusy() const -> bool final;
 
 private:
   std::reference_wrapper<MasterSpeaker> masterSpeaker;
+  auto internalPull(int samples) -> std::vector<float> final;
 };

@@ -9,11 +9,11 @@
 class Synth : public Source
 {
 public:
-  Synth(const double &bpm, class Sink &, OscType, Envelope);
+  Synth(const double &bpm, class Sink &, double gain, double pan, OscType, Envelope);
   auto isBusy() const -> bool final;
   auto operator()(Envelope) -> void;
   auto operator()(Note) -> void;
-  auto pull(int samples) -> std::vector<float> final;
+  auto internalPull(int samples) -> std::vector<float> final;
 
 private:
   std::reference_wrapper<const double> bpm;

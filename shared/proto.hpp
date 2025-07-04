@@ -29,7 +29,9 @@ namespace msg
   struct Speaker_CtorReq
   {
     int32_t id;
-    SER_PROPS(id);
+    double gain;
+    double pan;
+    SER_PROPS(id, gain, pan);
   };
 
   struct CtorRsp
@@ -42,9 +44,11 @@ namespace msg
   {
     int32_t id;
     int32_t sinkId;
+    double gain;
+    double pan;
     OscType oscType;
     Envelope envelope;
-    SER_PROPS(id, sinkId, oscType, envelope);
+    SER_PROPS(id, sinkId, gain, pan, oscType, envelope);
   };
 
   struct SetBpm
@@ -72,7 +76,9 @@ namespace msg
     int32_t id;
     int32_t sinkId;
     std::string path;
-    SER_PROPS(id, sinkId, path);
+    double gain;
+    double pan;
+    SER_PROPS(id, sinkId, path, gain, pan);
   };
 
   struct Sample_Play
@@ -100,7 +106,9 @@ namespace msg
   {
     int32_t id;
     int32_t sinkId;
-    SER_PROPS(id, sinkId);
+    double gain;
+    double pan;
+    SER_PROPS(id, sinkId, gain, pan);
   };
 
   struct Reverb_SetWet
@@ -108,6 +116,22 @@ namespace msg
     int32_t id;
     double v;
     SER_PROPS(id, v);
+  };
+
+  struct Source_SendReq
+  {
+    int32_t id;
+    int32_t sourceId;
+    int32_t sinkId;
+    double gain;
+    double pan;
+    SER_PROPS(id, sourceId, sinkId, gain, pan);
+  };
+
+  struct Source_SendRsp
+  {
+    int32_t id;
+    SER_PROPS(id);
   };
 } // namespace msg
 
@@ -123,4 +147,5 @@ using ProtoC2S = Proto<msg::Log,
                        msg::Source_SetGain,
                        msg::Source_SetPan,
                        msg::Reverb_CtorReq,
-                       msg::Reverb_SetWet>;
+                       msg::Reverb_SetWet,
+                       msg::Source_SendReq>;

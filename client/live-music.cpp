@@ -49,28 +49,34 @@ auto thread(std::function<auto()->void> v) -> std::thread *
   });
 }
 
-auto createPluck(Sink &v) -> Synth
+auto createPluck(Sink &v, double gain, double pan) -> Synth
 {
   return Synth{
     v,
-    Synth::CtorParams{.oscType = OscType::sin,
-                      .envelope = Envelope{.attack = .01, .decay = .02, .sustain = -30, .release = 1}}};
+    SynthParams{.gain = gain,
+                .pan = pan,
+                .oscType = OscType::sin,
+                .envelope = Envelope{.attack = .01, .decay = .02, .sustain = -30, .release = 1}}};
 }
 
-auto createBass(Sink &v) -> Synth
+auto createBass(Sink &v, double gain, double pan) -> Synth
 {
   return Synth{
     v,
-    Synth::CtorParams{.oscType = OscType::triangle,
-                      .envelope = Envelope{.attack = .01, .decay = 0, .sustain = 0, .release = .5}}};
+    SynthParams{.gain = gain,
+                .pan = pan,
+                .oscType = OscType::triangle,
+                .envelope = Envelope{.attack = .01, .decay = 0, .sustain = 0, .release = .5}}};
 }
 
-auto createPad(Sink &v) -> Synth
+auto createPad(Sink &v, double gain, double pan) -> Synth
 {
   return Synth{
     v,
-    Synth::CtorParams{.oscType = OscType::sin,
-                      .envelope = Envelope{.attack = .25, .decay = 0, .sustain = 0, .release = .25}}};
+    SynthParams{.gain = gain,
+                .pan = pan,
+                .oscType = OscType::sin,
+                .envelope = Envelope{.attack = .25, .decay = 0, .sustain = 0, .release = .25}}};
 }
 
 auto isLate() -> bool
