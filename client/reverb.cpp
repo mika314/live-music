@@ -1,5 +1,5 @@
 #include "reverb.hpp"
-#include "live-music.hpp"
+#include "live-music-internal.hpp"
 
 Reverb::Reverb(Sink &sink, double gain, double pan)
   : Source(ctor(msg::Reverb_CtorReq{.sinkId = sink.getId(), .gain = gain, .pan = pan})),

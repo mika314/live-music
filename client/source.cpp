@@ -1,6 +1,7 @@
 #include "source.hpp"
-#include "live-music.hpp"
+#include "live-music-internal.hpp"
 #include "send.hpp"
+#include "sink.hpp"
 #include <shared/proto.hpp>
 
 auto Source::gain(double v) -> void

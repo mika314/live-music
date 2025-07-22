@@ -9,17 +9,14 @@ auto main() -> int
   thread([&]() {
     auto loop =
       Sample{master, "samples/stargate-sample-pack/fugue-state-audio/loops/120-filterhats.wav", -12};
-
     auto kick =
       Sample{master, "samples/stargate-sample-pack/karoryfer/kicks/kick_Szpaderski_24_dampened.wav", -5};
-    kick.send(reverb, -12, 0);
-
     auto snare =
       Sample{master, "samples/stargate-sample-pack/karoryfer/snares/snare_Pearl_alumunum_14x8.wav", -5};
-    snare.send(reverb, -12, .25);
-
     auto clap = Sample{
       master, "samples/stargate-sample-pack/freesound/drums/clap/388042__sami-kullstrom__clap.wav", -12};
+    kick.send(reverb, -12, 0);
+    snare.send(reverb, -12, .25);
     clap.send(reverb, -15, .25);
 
     for (;;)
@@ -27,7 +24,7 @@ auto main() -> int
       loop(-35);
       for (auto i = 0; i < 4 * 4; ++i)
       {
-        kick();
+        kick(0);
         if (i % 2 == 1)
         {
           snare(-20);
@@ -45,13 +42,13 @@ auto main() -> int
     auto hat = Sample(master, "samples/stargate-sample-pack/karoryfer/hihats/hihat_BRD_tight.wav", -5);
     for (;;)
     {
-      hat(-25 - rand() % 6);
-      if (rand() % 8 != 0)
+      hat(-15 - rnd() % 6);
+      if (rnd() % 8 != 0)
         delay(d8);
       else
       {
         delay(d16);
-        hat(-25 - rand() % 6);
+        hat(-25 - rnd() % 6);
         delay(d16);
       }
     }
@@ -60,12 +57,12 @@ auto main() -> int
   thread([&]() {
     auto bass = createBass(master);
     // clang-format off
-     for (;;)
-       bass.seq(C.setVel(-25).setDur(d8) + O2,
-                I,   d4, I,   d4, I,   d4, I,   d4,
-                II,  d4, II,  d4, II,  d4, II,  d4,
-                IV,  d4, IV,  d4, IV,  d4, IV,  d4,
-                III, d4, III, d4, III, d4, III, d4);
+       for (;;)
+         bass.seq(C.setVel(-25).setDur(d8) + O2,
+                  I,   d4, I,   d4, I,   d4, I,   d4,
+                  II,  d4, II,  d4, II,  d4, II,  d4,
+                  IV,  d4, IV,  d4, IV,  d4, IV,  d4,
+                  III, d4, III, d4, III, d4, III, d4);
     // clang-format on
   });
 
@@ -90,15 +87,24 @@ auto main() -> int
     for (;;)
     {
       // clang-format off
-      pluck.seq(C.setVel(0).setDur(d16) + O4,
-                I,   d8, II,  d8, III, d8, IV,  d8, V,   d8, VI,     d8, VII,     d8, O,       d8,
-                II,  d8, III, d8, IV,  d8, V,   d8, VI,  d8, VII,    d8, O,       d8, O + II,  d8,
-                IV,  d8, V,   d8, VI,  d8, VII, d8, O,   d8, O + II, d8, O + III, d8, O + IV,  d8,
-                III, d8, IV,  d8, V,   d8, VI,  d8, VII, d8, O,      d8, O + II,  d8, O + III, d8);
+        pluck.seq(C.setVel(-18).setDur(d16) + O4,
+                  I,   d8, II,  d8, III, d8, IV,  d8, V,   d8, VI,     d8, VII,     d8, O,       d8,
+                  II,  d8, III, d8, IV,  d8, V,   d8, VI,  d8, VII,    d8, O,       d8, O + II,  d8,
+                  IV,  d8, V,   d8, VI,  d8, VII, d8, O,   d8, O + II, d8, O + III, d8, O + IV,  d8,
+                  III, d8, IV,  d8, V,   d8, VI,  d8, VII, d8, O,      d8, O + II,  d8, O + III, d8);
       // clang-format on
     }
   });
+  // thread([&]() {
+  //   auto pluck = createPluck(master);
+  //   pluck.send(reverb, -15, 0);
+  //   double notes[] = {I, II, III, IV, V, VI, VII, O};
+  //   for (;;)
+  //   {
+  //     pluck(C.setVel(-6) + notes[rnd() % (sizeof(notes) / sizeof(notes[0]))] + O4);
+  //     delay(d8);
+  //   }
+  // });
 
-  for (;;)
-    std::this_thread::sleep_for(std::chrono::seconds(10));
+  runForever();
 }

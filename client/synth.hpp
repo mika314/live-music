@@ -3,7 +3,6 @@
 #include <shared/envelope.hpp>
 #include <shared/note.hpp>
 #include <shared/osc_type.hpp>
-#include <utility>
 
 auto delay(double) -> void;
 
@@ -24,8 +23,8 @@ public:
   template <typename... Args>
   auto operator()(Note n0, Args &&...n) -> void
   {
-    (*this)(std::move(n0));
-    (*this)(std::forward<Args>(n)...);
+    (*this)(n0);
+    (*this)(n...);
   }
   auto operator()(Envelope) -> void;
   auto maj(Note) -> void;
@@ -40,13 +39,13 @@ public:
   auto seq(Note key, int ofset, double dur, Args &&...n) -> void
   {
     seq(key, ofset, dur);
-    seq(key, std::forward<Args>(n)...);
+    seq(key, n...);
   }
   auto chord(Note key, int ofset) -> void { (*this)(key + ofset); }
   template <typename... Args>
   auto chord(Note key, int ofset, Args &&...n) -> void
   {
     chord(key, ofset);
-    chord(key, std::forward<Args>(n)...);
+    chord(key, n...);
   }
 };

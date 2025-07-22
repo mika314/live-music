@@ -1,4 +1,12 @@
 #include "live-music.hpp"
+#include "conn.hpp"
+#include "live-music-internal.hpp"
+#include "reverb.hpp"
+#include "sample.hpp"
+#include "send.hpp"
+#include "speaker.hpp"
+#include "synth.hpp"
+#include <chrono>
 #include <shared/consts.hpp>
 #include <shared/proto.hpp>
 #include <thread>
@@ -41,14 +49,6 @@ auto getCurTime() -> decltype(std::chrono::steady_clock::now())
   return curTime;
 }
 
-auto thread(std::function<auto()->void> v) -> std::thread *
-{
-  return new std::thread([v = std::move(v)]() {
-    newThread();
-    v();
-  });
-}
-
 auto createPluck(Sink &v, double gain, double pan) -> Synth
 {
   return Synth{
@@ -82,4 +82,26 @@ auto createPad(Sink &v, double gain, double pan) -> Synth
 auto isLate() -> bool
 {
   return std::chrono::steady_clock::now() > getCurTime() + std::chrono::milliseconds(100);
+}
+
+namespace internal
+{
+  auto thread(BaseFunc &v) -> void
+  {
+    new std::thread([&v]() {
+      newThread();
+      v.invoke();
+    });
+  }
+} // namespace internal
+
+auto runForever() -> void
+{
+  for (;;)
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+}
+
+auto rnd() -> int
+{
+  return rand();
 }

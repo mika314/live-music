@@ -1,5 +1,6 @@
 #include "synth.hpp"
 #include "conn.hpp"
+#include "live-music-internal.hpp"
 #include "live-music.hpp"
 #include "sink.hpp"
 
