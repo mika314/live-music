@@ -8,6 +8,7 @@ Conn::Conn()
           if (status != 0)
             return;
           conn = std::move(aConn);
+          conn.noDelay(true);
           q = std::make_unique<Q>(loop, [this](std::string v) {
             if (v.empty())
               return;

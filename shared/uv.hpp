@@ -23,6 +23,7 @@ namespace uv
     auto readStart(ReadCb) -> int;
     auto write(std::string, WriteCb) -> int;
     auto isInitialized() const -> bool { return socket != nullptr; }
+    auto noDelay(bool) -> int;
     auto bind(const std::string &addr, int post, int flags) -> int;
     auto listen(int backlog, ListenCb) -> int;
 

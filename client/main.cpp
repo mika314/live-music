@@ -3,108 +3,110 @@
 auto main() -> int
 {
   setBpm(120);
+
   auto master = Speaker{};
   auto reverb = Reverb{master};
-  reverb.wet(1);
+  reverb.wet(0.5);
+
+  // --- RHYTHM SECTION ---
+
+  // A simple, steady kick drum.
   thread([&]() {
-    auto loop =
-      Sample{master, "samples/stargate-sample-pack/fugue-state-audio/loops/120-filterhats.wav", -12};
     auto kick =
-      Sample{master, "samples/stargate-sample-pack/karoryfer/kicks/kick_Szpaderski_24_dampened.wav", -5};
-    auto snare =
-      Sample{master, "samples/stargate-sample-pack/karoryfer/snares/snare_Pearl_alumunum_14x8.wav", -5};
-    auto clap = Sample{
-      master, "samples/stargate-sample-pack/freesound/drums/clap/388042__sami-kullstrom__clap.wav", -12};
-    kick.send(reverb, -12, 0);
-    snare.send(reverb, -12, .25);
-    clap.send(reverb, -15, .25);
-
+      Sample{master, "samples/stargate-sample-pack/karoryfer/kicks/kick_Polmuz_mod_20_clean.wav", -8};
+    kick.send(reverb, -20, 0);
     for (;;)
     {
-      loop(-35);
-      for (auto i = 0; i < 4 * 4; ++i)
+      kick(0);
+      delay(d4);
+    }
+  });
+
+  // A simple hi-hat for rhythm.
+  thread([&]() {
+    auto hat = Sample(master, "samples/stargate-sample-pack/karoryfer/hihats/hihat_BRD_tight.wav", -10);
+    for (;;)
+    {
+      hat(0);
+      delay(d8);
+      hat(-15);
+      delay(d8);
+    }
+  });
+
+  // A simple bassline following the root notes of the chords.
+  thread([&]() {
+    auto bass = createBass(master, -20);
+    bass.send(reverb, -20, 0);
+    for (;;)
+    {
+      bass.seq(G + O2, I, d4, I, d4, I, d4, I, d4);
+      bass.seq(D + O2, I, d4, I, d4, I, d4, I, d4);
+      bass.seq(E + O2, I, d4, I, d4, I, d4, I, d4);
+      bass.seq(C + O2, I, d4, I, d4, I, d4, I, d4);
+    }
+  });
+
+  // --- HARMONY SECTION ---
+
+  // An optimistic chord progression: G - C - D - Em
+  thread([&]() {
+    auto pad = createPad(master, -5);
+    pad.send(reverb, -8, 0);
+    for (;;)
+    {
+      pad.chord(G.setVel(-20).setDur(d2) + O3, I, III, V);
+      delay(Bar);
+      pad.chord(D.setVel(-20).setDur(d2) + O3, I, III, V);
+      delay(Bar);
+      pad.chord(E.setVel(-20).setDur(d2) + O3, I, iii, V);
+      delay(Bar);
+      pad.chord(C.setVel(-20).setDur(d2) + O3, I, III, V);
+      delay(Bar);
+    }
+  });
+
+  // --- ALGORITHMIC MELODY SECTION ---
+
+  // An algorithmic melody that follows the chord progression.
+  thread([&]() {
+    auto pluck = createPluck(master, -8);
+    pluck.send(reverb, -5, 0);
+    for (;;)
+    {
+      // G Major chord notes: G, B, D
+      Note g_major_notes[] = {G, B, D};
+      for (int i = 0; i < 4; ++i)
+      { // Play 4 notes per chord
+        pluck.seq(g_major_notes[rnd() % 3] + O5, 0, d16);
+        delay(d16);
+      }
+
+      // C Major chord notes: C, E, G
+      Note c_major_notes[] = {C, E, G};
+      for (int i = 0; i < 4; ++i)
       {
-        kick(0);
-        if (i % 2 == 1)
-        {
-          snare(-20);
-          clap(-15);
-        }
-        delay(d8);
-        if (i % 2 == 1)
-          clap(-25);
-        delay(d8);
+        pluck.seq(c_major_notes[rnd() % 3] + O5, 0, d16);
+        delay(d16);
+      }
+
+      // D Major chord notes: D, Fs, A
+      Note d_major_notes[] = {D, Fs, A};
+      for (int i = 0; i < 4; ++i)
+      {
+        pluck.seq(d_major_notes[rnd() % 3] + O5, 0, d16);
+        delay(d16);
+      }
+
+      // E Minor chord notes: E, G, B
+      Note e_minor_notes[] = {E, G, B};
+      for (int i = 0; i < 4; ++i)
+      {
+        pluck.seq(e_minor_notes[rnd() % 3] + O5, 0, d16);
+        delay(d16);
       }
     }
   });
-
-  thread([&]() {
-    auto hat = Sample(master, "samples/stargate-sample-pack/karoryfer/hihats/hihat_BRD_tight.wav", -5);
-    for (;;)
-    {
-      hat(-15 - rnd() % 6);
-      if (rnd() % 8 != 0)
-        delay(d8);
-      else
-      {
-        delay(d16);
-        hat(-25 - rnd() % 6);
-        delay(d16);
-      }
-    }
-  });
-
-  thread([&]() {
-    auto bass = createBass(master);
-    // clang-format off
-       for (;;)
-         bass.seq(C.setVel(-25).setDur(d8) + O2,
-                  I,   d4, I,   d4, I,   d4, I,   d4,
-                  II,  d4, II,  d4, II,  d4, II,  d4,
-                  IV,  d4, IV,  d4, IV,  d4, IV,  d4,
-                  III, d4, III, d4, III, d4, III, d4);
-    // clang-format on
-  });
-
-  thread([&]() {
-    auto pad = createPad(master, -15);
-    pad.send(reverb, -5, 0);
-    for (;;)
-    {
-      pad.chord(C.setVel(-25).setDur(Bar) + O3, I, III, V, VII);
-      delay(Bar);
-      pad.chord(D.setVel(-25).setDur(Bar) + O3, I, iii, V, vii);
-      delay(Bar);
-      pad.chord(F.setVel(-25).setDur(Bar) + O3, I, III, V, VII);
-      delay(Bar);
-      pad.chord(E.setVel(-25).setDur(Bar) + O3, I, iii, V, vii);
-      delay(Bar);
-    }
-  });
-  thread([&]() {
-    auto pluck = createPluck(master);
-    pluck.send(reverb, -15, 0);
-    for (;;)
-    {
-      // clang-format off
-        pluck.seq(C.setVel(-18).setDur(d16) + O4,
-                  I,   d8, II,  d8, III, d8, IV,  d8, V,   d8, VI,     d8, VII,     d8, O,       d8,
-                  II,  d8, III, d8, IV,  d8, V,   d8, VI,  d8, VII,    d8, O,       d8, O + II,  d8,
-                  IV,  d8, V,   d8, VI,  d8, VII, d8, O,   d8, O + II, d8, O + III, d8, O + IV,  d8,
-                  III, d8, IV,  d8, V,   d8, VI,  d8, VII, d8, O,      d8, O + II,  d8, O + III, d8);
-      // clang-format on
-    }
-  });
-  // thread([&]() {
-  //   auto pluck = createPluck(master);
-  //   pluck.send(reverb, -15, 0);
-  //   double notes[] = {I, II, III, IV, V, VI, VII, O};
-  //   for (;;)
-  //   {
-  //     pluck(C.setVel(-6) + notes[rnd() % (sizeof(notes) / sizeof(notes[0]))] + O4);
-  //     delay(d8);
-  //   }
-  // });
 
   runForever();
 }

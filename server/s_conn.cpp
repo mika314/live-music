@@ -10,6 +10,7 @@
 Conn::Conn(uv::Tcp &&aTcp, std::function<auto(Conn *self)->void> destroy, MasterSpeaker &aMasterSpeaker)
   : tcp(std::move(aTcp)), masterSpeaker(aMasterSpeaker)
 {
+  tcp.noDelay(true);
   tcp.readStart([this, destroy = std::move(destroy)](int status, std::string aBuf) {
     if (status < 0)
     {

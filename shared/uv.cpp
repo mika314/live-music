@@ -81,6 +81,12 @@ namespace uv
         delete aReq;
       });
   }
+
+  auto Tcp::noDelay(bool v) -> int
+  {
+    return uv_tcp_nodelay(socket.get(), v ? 1 : 0);
+  }
+
   auto Tcp::bind(const std::string &addr, int port, int flags) -> int
   {
     struct sockaddr_in in;
