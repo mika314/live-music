@@ -8,7 +8,7 @@ auto delay(double) -> void;
 class Sample : public Source
 {
 public:
-  Sample(class Sink &, const char *, double gain = 0, double pan = 0, Note = C + O4);
+  Sample(class Sink &, const char *, double gain = 0, double pan = 0, Note = C4);
   auto operator()(double = -12) -> void;
   auto operator()(Note) -> void;
 

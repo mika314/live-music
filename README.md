@@ -45,7 +45,7 @@ setBpm(120); // Sets the tempo to 120 beats per minute
 
 ### 2. Adding Samples (Drums, Percussion, etc.)
 
-Use the `Sample` object to load and play WAV files. You can specify the path to your sample and its initial volume.
+The `Sample` object can now load WAV files and play them with pitch and envelope control, similar to a synthesizer. You can specify the path to your sample, its initial volume, and a base note for pitch reference (defaults to C4).
 
 ```cpp
 // Example: A kick drum
@@ -61,7 +61,14 @@ thread([&]() {
 ```
 
 - `Sample{master, "path/to/sample.wav", volume}`: Creates a sample instrument. `master` is the main audio output, `"path/to/sample.wav"` is the sound file, and `volume` is in decibels (e.g., -8).
-- `kick(0)`: Plays the sample. The argument is a gain value in decibels, where `0` is the loudest and negative values make it quieter.
+- `Sample{master, "path/to/sample.wav", gain, pan, baseNote}`: Creates a sample instrument with a specified base note for pitch shifting.
+- `instrument(0)`: Plays the sample. The argument is a gain value in decibels, where `0` is the loudest and negative values make it quieter.
+- `instrument(Note)`: Plays the instrument at the specified note's pitch and velocity.
+- `instrument(Envelope)`: Applies an ADSR envelope to the instrument's output.
+- `instrument.seq(Note key, int ofset, double dur, ...)`: Plays a sequence of notes on the sample.
+- `instrument.chord(Note key, int ofset, ...)`: Plays a chord on the sample.
+- `instrument.maj(Note)`: Plays a major chord on the sample.
+- `instrument.min(Note)`: Plays a minor chord on the sample.
 - `delay(d4)`: Pauses the thread for the duration of a quarter note. `d4`, `d8`, `d16`, `Bar` are predefined durations for quarter, eighth, sixteenth notes, and a full bar, respectively.
 
 ### 3. Creating Synthesizer Instruments (Basslines, Melodies, Chords, Pads)
@@ -71,11 +78,12 @@ Functions like `createBass()`, `createPluck()`, and `createPad()` create various
 ```cpp
 // Example: A simple bassline
 thread([&]() {
-  auto bass = createBass(master, -20);
+  auto bass = createBass(master, -15);
+  bass.send(reverb, -20, 0);
   for (;;)
   {
-    bass.seq(G + O2, I, d4, I, d4, I, d4, I, d4); // Play G note in Octave 2 for a quarter note
-    bass.seq(D + O2, I, d4, I, d4, I, d4, I, d4); // Play D note in Octave 2 for a quarter note
+    bass.seq(G3, I, d4, I, d4, I, d4, I, d4); // Play G note in Octave 3 for a quarter note
+    bass.seq(D3, I, d4, I, d4, I, d4, I, d4); // Play D note in Octave 3 for a quarter note
     // ... and so on for other notes
   }
 });
@@ -85,11 +93,12 @@ thread([&]() {
 // Example: An optimistic chord progression
 thread([&]() {
   auto pad = createPad(master, -5);
+  pad.send(reverb, -8, 0);
   for (;;)
   {
-    pad.chord(G.setVel(-20).setDur(d2) + O3, I, III, V); // Play G major chord in Octave 3
+    pad.chord(G4.setVel(-20).setDur(d2), I, III, V); // Play G major chord in Octave 4
     delay(Bar);
-    pad.chord(D.setVel(-20).setDur(d2) + O3, I, III, V); // Play D major chord in Octave 3
+    pad.chord(D4.setVel(-20).setDur(d2), I, III, V); // Play D major chord in Octave 4
     // ... and so on for other chords
   }
 });
@@ -98,7 +107,7 @@ thread([&]() {
 - `createBass(master, volume)`: Creates a bass synthesizer.
 - `createPluck(master, volume)`: Creates a plucked synth sound.
 - `createPad(master, volume)`: Creates a pad synthesizer.
-- `note + Octave`: Defines a note (e.g., `G`, `C`, `D`, `E`, `Fs` for F-sharp) and its octave (e.g., `O2`, `O3`, `O5`).
+- **Note Constants**: Notes are now defined with their octave directly in the name (e.g., `C0`, `G3`, `B6`).
 - `I, III, V, iii`: These represent intervals relative to the base note, used in `chord()` or `seq()`. Capital Roman numerals (e.g., `I`, `III`, `V`) denote major intervals, while lowercase Roman numerals (e.g., `iii`) denote minor intervals.
 - `synth(Note)`: Plays a single note on the synthesizer.
   ```cpp
@@ -106,7 +115,7 @@ thread([&]() {
   thread([&]() {
     auto mySynth = createPluck(master, -10);
     for (;;) {
-      mySynth(C + O4); // Play C in Octave 4
+      mySynth(C4); // Play C in Octave 4
       delay(d4);
     }
   });
@@ -120,7 +129,7 @@ thread([&]() {
     Envelope customEnvelope = Envelope{0.1, 0.5, -20, 0.1};
     for (;;) {
       mySynth(customEnvelope);
-      mySynth(C + O4);
+      mySynth(C4);
       delay(Bar);
     }
   });
@@ -132,7 +141,7 @@ thread([&]() {
   thread([&]() {
     auto mySynth = createPad(master, -10);
     for (;;) {
-      mySynth.maj(C + O3); // Play C major chord in Octave 3
+      mySynth.maj(C3); // Play C major chord in Octave 3
       delay(Bar);
     }
   });
@@ -143,14 +152,14 @@ thread([&]() {
   thread([&]() {
     auto mySynth = createPad(master, -10);
     for (;;) {
-      mySynth.min(A + O3); // Play A minor chord in Octave 3
+      mySynth.min(A3); // Play A minor chord in Octave 3
       delay(Bar);
     }
   });
   ```
 - `synth.seq(Note key, int ofset, double dur, ...)`: Plays a sequence of notes. `key` is the base note, `ofset` is the interval from the key, and `dur` is the duration.
 - `synth.chord(Note key, int ofset, ...)`: Plays a chord based on the root note and specified intervals.
-- `note.setVel(velocity).setDur(duration) + Octave`: Sets the velocity (volume) and duration for a note.
+- `note.setVel(velocity).setDur(duration)`: Sets the velocity (volume) and duration for a note. Both `setVel` and `setDur` have two versions: a mutable version that modifies the Note object in place and returns a reference, and a const version that returns a new Note object with the modified value.
 
 ### 5. Using Reverb
 
@@ -161,10 +170,10 @@ auto reverb = Reverb{master};
 reverb.wet(0.5); // Adjust the wetness (amount of reverb)
 
 // Send an instrument's output to the reverb
-kick.send(reverb, -20, 0); // kick instrument sends to reverb with specific gain and pan
+instrument.send(reverb, -20, 0); // instrument sends to reverb with specific gain and pan
 bass.send(reverb, -20, 0);
 pad.send(reverb, -8, 0);
-pluck.send(reverb, -5, 0);
+// harp.send(reverb, -5, 0); // Example for a sample instrument
 ```
 
 - `Reverb{master}`: Initializes a reverb effect connected to the master output.
@@ -176,16 +185,18 @@ pluck.send(reverb, -5, 0);
 The system supports algorithmic generation of melodies or other musical elements. The `main.cpp` example includes a section for an algorithmic melody:
 
 ```cpp
-// Example: Algorithmic melody
+// Example: Algorithmic melody using a sample instrument
 thread([&]() {
-  auto pluck = createPluck(master, -8);
+  auto harp =
+    Sample{master, "server/VCSL/Chordophones/Composite Chordophones/Concert Harp/KSHarp_C3_mf3.wav", 25};
+  harp.send(reverb, -5, 0);
   for (;;)
   {
     // G Major chord notes: G, B, D
-    Note g_major_notes[] = {G, B, D};
-    for (int i = 0; i < 4; ++i)
-    {
-      pluck.seq(g_major_notes[rnd() % 3] + O5, 0, d16); // Randomly pick a note from the chord
+    Note g_major_notes[] = {G5, B5, D5};
+    for (int i = 0; i < 8; ++i)
+    { // Play 8 notes per chord
+      harp.seq(g_major_notes[rnd() % 3], 0, d16); // Randomly pick a note from the chord
       delay(d16);
     }
     // ... similar logic for other chords
@@ -194,6 +205,14 @@ thread([&]() {
 ```
 
 - `rnd() % N`: Generates a random number between 0 and N-1, useful for creating variations.
+
+### Available Samples
+
+The project includes a `samples/` directory with various audio samples. Additionally, the `VCSL/` directory contains a rich collection of melodic samples, including:
+- `VCSL/Chordophones/Composite Chordophones/Concert Harp/`
+- `VCSL/Chordophones/Composite Chordophones/Folk Harp/`
+- `VCSL/Chordophones/Composite Chordophones/Strumstick/`
+- And many more under `VCSL/Aerophones`, `VCSL/Electrophones`, etc.
 
 ### 7. Recompile and Run
 

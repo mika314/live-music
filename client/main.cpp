@@ -41,10 +41,10 @@ auto main() -> int
     bass.send(reverb, -20, 0);
     for (;;)
     {
-      bass.seq(G + O3, I, d4, I, d4, I, d4, I, d4);
-      bass.seq(D + O3, I, d4, I, d4, I, d4, I, d4);
-      bass.seq(E + O3, I, d4, I, d4, I, d4, I, d4);
-      bass.seq(C + O3, I, d4, I, d4, I, d4, I, d4);
+      bass.seq(G3, I, d4, I, d4, I, d4, I, d4);
+      bass.seq(D3, I, d4, I, d4, I, d4, I, d4);
+      bass.seq(E3, I, d4, I, d4, I, d4, I, d4);
+      bass.seq(C3, I, d4, I, d4, I, d4, I, d4);
     }
   });
 
@@ -56,13 +56,13 @@ auto main() -> int
     pad.send(reverb, -8, 0);
     for (;;)
     {
-      pad.chord(G.setVel(-20).setDur(d2) + O4, I, III, V);
+      pad.chord(G4.setVel(-20).setDur(d2), I, III, V);
       delay(Bar);
-      pad.chord(D.setVel(-20).setDur(d2) + O4, I, III, V);
+      pad.chord(D4.setVel(-20).setDur(d2), I, III, V);
       delay(Bar);
-      pad.chord(E.setVel(-20).setDur(d2) + O4, I, iii, V);
+      pad.chord(E4.setVel(-20).setDur(d2), I, iii, V);
       delay(Bar);
-      pad.chord(C.setVel(-20).setDur(d2) + O4, I, III, V);
+      pad.chord(C4.setVel(-20).setDur(d2), I, III, V);
       delay(Bar);
     }
   });
@@ -77,34 +77,34 @@ auto main() -> int
     for (;;)
     {
       // G Major chord notes: G, B, D
-      Note g_major_notes[] = {G, B, D};
+      Note g_major_notes[] = {G5, B5, D5};
       for (int i = 0; i < 8; ++i)
       { // Play 4 notes per chord
-        harp.seq(g_major_notes[rnd() % 3] + O5, 0, d16);
+        harp.seq(g_major_notes[rnd() % 3], 0, d16);
         delay(d16);
       }
 
       // C Major chord notes: C, E, G
-      Note c_major_notes[] = {C, E, G};
+      Note c_major_notes[] = {C5, E5, G5};
       for (int i = 0; i < 8; ++i)
       {
-        harp.seq(c_major_notes[rnd() % 3] + O5, 0, d16);
+        harp.seq(c_major_notes[rnd() % 3], 0, d16);
         delay(d16);
       }
 
       // D Major chord notes: D, Fs, A
-      Note d_major_notes[] = {D, Fs, A};
+      Note d_major_notes[] = {D5, Fs5, A5};
       for (int i = 0; i < 8; ++i)
       {
-        harp.seq(d_major_notes[rnd() % 3] + O5, 0, d16);
+        harp.seq(d_major_notes[rnd() % 3], 0, d16);
         delay(d16);
       }
 
       // E Minor chord notes: E, G, B
-      Note e_minor_notes[] = {E, G, B};
+      Note e_minor_notes[] = {E5, G5, B5};
       for (int i = 0; i < 8; ++i)
       {
-        harp.seq(e_minor_notes[rnd() % 3] + O5, 0, d16);
+        harp.seq(e_minor_notes[rnd() % 3], 0, d16);
         delay(d16);
       }
     }
