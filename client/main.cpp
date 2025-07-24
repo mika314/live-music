@@ -1,4 +1,5 @@
 #include "live-music.hpp"
+#include <shared/note.hpp>
 
 auto main() -> int
 {
@@ -36,14 +37,14 @@ auto main() -> int
 
   // A simple bassline following the root notes of the chords.
   thread([&]() {
-    auto bass = createBass(master, -20);
+    auto bass = createBass(master, -15);
     bass.send(reverb, -20, 0);
     for (;;)
     {
-      bass.seq(G + O2, I, d4, I, d4, I, d4, I, d4);
-      bass.seq(D + O2, I, d4, I, d4, I, d4, I, d4);
-      bass.seq(E + O2, I, d4, I, d4, I, d4, I, d4);
-      bass.seq(C + O2, I, d4, I, d4, I, d4, I, d4);
+      bass.seq(G + O3, I, d4, I, d4, I, d4, I, d4);
+      bass.seq(D + O3, I, d4, I, d4, I, d4, I, d4);
+      bass.seq(E + O3, I, d4, I, d4, I, d4, I, d4);
+      bass.seq(C + O3, I, d4, I, d4, I, d4, I, d4);
     }
   });
 
@@ -55,13 +56,13 @@ auto main() -> int
     pad.send(reverb, -8, 0);
     for (;;)
     {
-      pad.chord(G.setVel(-20).setDur(d2) + O3, I, III, V);
+      pad.chord(G.setVel(-20).setDur(d2) + O4, I, III, V);
       delay(Bar);
-      pad.chord(D.setVel(-20).setDur(d2) + O3, I, III, V);
+      pad.chord(D.setVel(-20).setDur(d2) + O4, I, III, V);
       delay(Bar);
-      pad.chord(E.setVel(-20).setDur(d2) + O3, I, iii, V);
+      pad.chord(E.setVel(-20).setDur(d2) + O4, I, iii, V);
       delay(Bar);
-      pad.chord(C.setVel(-20).setDur(d2) + O3, I, III, V);
+      pad.chord(C.setVel(-20).setDur(d2) + O4, I, III, V);
       delay(Bar);
     }
   });
@@ -70,39 +71,40 @@ auto main() -> int
 
   // An algorithmic melody that follows the chord progression.
   thread([&]() {
-    auto pluck = createPluck(master, -8);
-    pluck.send(reverb, -5, 0);
+    auto harp =
+      Sample{master, "VCSL/Chordophones/Composite Chordophones/Concert Harp/KSHarp_C3_mf3.wav", 25};
+    harp.send(reverb, -5, 0);
     for (;;)
     {
       // G Major chord notes: G, B, D
       Note g_major_notes[] = {G, B, D};
-      for (int i = 0; i < 4; ++i)
+      for (int i = 0; i < 8; ++i)
       { // Play 4 notes per chord
-        pluck.seq(g_major_notes[rnd() % 3] + O5, 0, d16);
+        harp.seq(g_major_notes[rnd() % 3] + O5, 0, d16);
         delay(d16);
       }
 
       // C Major chord notes: C, E, G
       Note c_major_notes[] = {C, E, G};
-      for (int i = 0; i < 4; ++i)
+      for (int i = 0; i < 8; ++i)
       {
-        pluck.seq(c_major_notes[rnd() % 3] + O5, 0, d16);
+        harp.seq(c_major_notes[rnd() % 3] + O5, 0, d16);
         delay(d16);
       }
 
       // D Major chord notes: D, Fs, A
       Note d_major_notes[] = {D, Fs, A};
-      for (int i = 0; i < 4; ++i)
+      for (int i = 0; i < 8; ++i)
       {
-        pluck.seq(d_major_notes[rnd() % 3] + O5, 0, d16);
+        harp.seq(d_major_notes[rnd() % 3] + O5, 0, d16);
         delay(d16);
       }
 
       // E Minor chord notes: E, G, B
       Note e_minor_notes[] = {E, G, B};
-      for (int i = 0; i < 4; ++i)
+      for (int i = 0; i < 8; ++i)
       {
-        pluck.seq(e_minor_notes[rnd() % 3] + O5, 0, d16);
+        harp.seq(e_minor_notes[rnd() % 3] + O5, 0, d16);
         delay(d16);
       }
     }

@@ -126,13 +126,19 @@ auto Conn::operator()(msg::Sample_CtorReq v) -> void
 {
   LOG("sample ctor", v.id, v.path);
   auto &sink = *dynamic_cast<Sink *>(entities[v.sinkId].get());
-  ctor<Sample>(v.id, bpm, sink, std::filesystem::path{v.path}, v.gain, v.pan);
+  ctor<Sample>(v.id, bpm, sink, std::filesystem::path{v.path}, v.gain, v.pan, v.note);
 }
 
-auto Conn::operator()(msg::Sample_Play v) -> void
+auto Conn::operator()(msg::Sample_Note v) -> void
 {
   auto &entity = *dynamic_cast<Sample *>(entities[v.id].get());
-  entity(v.vel);
+  entity.play(v.note);
+}
+
+auto Conn::operator()(msg::Sample_Envelope v) -> void
+{
+  auto &entity = *dynamic_cast<Sample *>(entities[v.id].get());
+  entity.set(v.envelope);
 }
 
 auto Conn::operator()(msg::Source_SetGain v) -> void

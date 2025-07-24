@@ -1,3 +1,6 @@
 [submodule "server/samples"]
 	path = server/samples
 	url = git@github.com:stargatedaw/stargate-sample-pack.git
+[submodule "server/VCSL"]
+	path = server/VCSL
+	url = https://github.com/sgossner/VCSL.git

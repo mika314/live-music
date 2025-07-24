@@ -78,14 +78,22 @@ namespace msg
     std::string path;
     double gain;
     double pan;
-    SER_PROPS(id, sinkId, path, gain, pan);
+    Note note;
+    SER_PROPS(id, sinkId, path, gain, pan, note);
   };
 
-  struct Sample_Play
+  struct Sample_Note
   {
     int32_t id;
-    double vel;
-    SER_PROPS(id, vel);
+    Note note;
+    SER_PROPS(id, note);
+  };
+
+  struct Sample_Envelope
+  {
+    int32_t id;
+    Envelope envelope;
+    SER_PROPS(id, envelope);
   };
 
   struct Source_SetGain
@@ -143,7 +151,8 @@ using ProtoC2S = Proto<msg::Log,
                        msg::Synth_Note,
                        msg::Synth_Envelope,
                        msg::Sample_CtorReq,
-                       msg::Sample_Play,
+                       msg::Sample_Note,
+                       msg::Sample_Envelope,
                        msg::Source_SetGain,
                        msg::Source_SetPan,
                        msg::Reverb_CtorReq,

@@ -15,7 +15,8 @@ public:
   auto operator()(msg::Reverb_CtorReq) -> void;
   auto operator()(msg::Reverb_SetWet) -> void;
   auto operator()(msg::Sample_CtorReq) -> void;
-  auto operator()(msg::Sample_Play) -> void;
+  auto operator()(msg::Sample_Note) -> void;
+  auto operator()(msg::Sample_Envelope) -> void;
   auto operator()(msg::SetBpm) -> void;
   auto operator()(msg::Source_SetGain) -> void;
   auto operator()(msg::Source_SetPan) -> void;

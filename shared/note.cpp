@@ -44,3 +44,17 @@ auto Note::setVel(double v) -> Note &
   vel = v;
   return *this;
 }
+
+auto Note::setDur(double v) const -> Note
+{
+  auto copy = *this;
+  copy.dur = v;
+  return copy;
+}
+
+auto Note::setVel(double v) const -> Note
+{
+  auto copy = *this;
+  copy.vel = v;
+  return copy;
+}
