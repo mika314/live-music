@@ -147,6 +147,24 @@ constexpr Note As6 = {82};
 constexpr Note Bb6 = {82};
 constexpr Note B6 = {83};
 
+constexpr Note C7 = {84};
+constexpr Note Cs7 = {85};
+constexpr Note Db7 = {85};
+constexpr Note D7 = {86};
+constexpr Note Ds7 = {87};
+constexpr Note Eb7 = {87};
+constexpr Note E7 = {88};
+constexpr Note F7 = {89};
+constexpr Note Fs7 = {90};
+constexpr Note Gb7 = {90};
+constexpr Note G7 = {91};
+constexpr Note Gs7 = {92};
+constexpr Note Ab7 = {92};
+constexpr Note A7 = {93};
+constexpr Note As7 = {94};
+constexpr Note Bb7 = {94};
+constexpr Note B7 = {95};
+
 constexpr int I       = 0;
 constexpr int ii      = 1;
 constexpr int II      = 2;
@@ -158,4 +176,5 @@ constexpr int vi      = 8;
 constexpr int VI      = 9;
 constexpr int vii     = 10;
 constexpr int VII     = 11;
+constexpr int O       = 12;
 // clang-format on

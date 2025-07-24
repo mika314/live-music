@@ -125,5 +125,20 @@ auto loadAudio(std::filesystem::path filePath) -> std::vector<float>
   }
 
   // At this point, 'samples' holds interleaved stereo PCM data at 44100 Hz in float format.
+
+  // Normalize samples
+  float maxAmplitude = 0.0f;
+  for (float sample : samples)
+  {
+    maxAmplitude = std::max(maxAmplitude, std::abs(sample));
+  }
+
+  if (maxAmplitude > 0.0f)
+  {
+    for (float &sample : samples)
+    {
+      sample /= maxAmplitude;
+    }
+  }
   return samples;
 }

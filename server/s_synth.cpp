@@ -27,7 +27,7 @@ auto Synth::internalPull(int samples) -> std::vector<float>
       for (const auto &n : notes)
         a += powf(10.f, n.vel / 20.f) *
              envelope.amp(1.f * (pos - n.start) / SampleRate, 1.f * (n.end - n.start) / SampleRate) *
-             osc(440.f * powf(2.f, (n.note - 69.f) / 12.f));
+             osc(440.f * powf(2.f, (n.note - 57.f) / 12.f));
       return a;
     }();
     ++pos;
