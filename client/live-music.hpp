@@ -78,6 +78,7 @@ static auto Whole = 4.;
 static auto Bar = 4.;
 static auto Rest = -1.0;
 static auto d32 = .125;
+static auto d64 = .0625;
 static auto d16 = .25;
 static auto d8 = .5;
 static auto d4 = 1.;

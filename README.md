@@ -171,6 +171,31 @@ The chord() function takes the first argument note and then a list of offsets fr
 - `synth.chord(Note key, int ofset, ...)`: Plays a chord based on the root note and specified intervals.
 - `note.setVel(velocity).setDur(duration)`: Sets the velocity (volume) and duration for a note. Both `setVel` and `setDur` have two versions: a mutable version that modifies the Note object in place and returns a reference, and a const version that returns a new Note object with the modified value.
 
+`create...` functions are simple wrappers around the Synth class.
+
+```
+auto createPluck(Sink &v, double gain, double pan) -> Synth
+{
+  return Synth{
+    v,
+    SynthParams{.gain = gain,
+                .pan = pan,
+                .oscType = OscType::sin,
+                .envelope = Envelope{.attack = .01, .decay = .02, .sustain = -30, .release = 1}}};
+}
+```
+
+You can create your own synthesizer:
+
+```
+auto mySynth = Synth{
+    master,
+    SynthParams{.gain = gain,
+                .pan = pan,
+                .oscType = OscType::sin,
+                .envelope = Envelope{.attack = .01, .decay = .02, .sustain = -30, .release = 1}}}
+```
+
 ### 5. Using Reverb
 
 You can add reverb to your instruments to create space and depth.

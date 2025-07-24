@@ -12,6 +12,8 @@ struct Note
   auto setVel(double) -> Note &;
   auto setDur(double) const -> Note;
   auto setVel(double) const -> Note;
+  auto octaveUp() const -> Note;
+  auto octaveDown() const -> Note;
 };
 
 auto operator+(Note, double) -> Note;
@@ -164,6 +166,8 @@ constexpr Note A7 = {93};
 constexpr Note As7 = {94};
 constexpr Note Bb7 = {94};
 constexpr Note B7 = {95};
+
+constexpr Note C8 = {96};
 
 constexpr int I       = 0;
 constexpr int ii      = 1;
