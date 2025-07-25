@@ -69,20 +69,3 @@ auto now() -> int;
 auto rnd() -> int;
 auto runForever() -> void;
 auto setBpm(double) -> void;
-
-static auto Sixteenth = .25;
-static auto Eighth = .5;
-static auto Quarter = 1.;
-static auto Halth = 2.;
-static auto Whole = 4.;
-static auto Bar = 4.;
-static auto Rest = -1.0;
-static auto d32 = .125;
-static auto d64 = .0625;
-static auto d16 = .25;
-static auto d8 = .5;
-static auto d4 = 1.;
-static auto d2 = 2.;
-static auto d1 = 4.;
-
-

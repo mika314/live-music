@@ -58,17 +58,3 @@ auto Note::setVel(double v) const -> Note
   copy.vel = v;
   return copy;
 }
-
-auto Note::octaveUp() const -> Note
-{
-  auto copy = *this;
-  copy.n += 12;
-  return copy;
-}
-
-auto Note::octaveDown() const -> Note
-{
-  auto copy = *this;
-  copy.n -= 12;
-  return copy;
-}

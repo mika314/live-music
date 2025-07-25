@@ -31,16 +31,73 @@ auto Sample::operator()(Envelope e) -> void
   ::send(msg::Sample_Envelope{.id = getId(), .envelope = e});
 }
 
-auto Sample::maj(Note n) -> void
+auto Sample::play(Note n) -> void
 {
-  if (isLate())
-    return;
-  chord(n, I, III, V);
+  switch (articulation)
+  {
+  case Articulation::legato: n.setDur(curDur); break;
+  case Articulation::staccato: n.setDur(curDur / 4); break;
+  case Articulation::unchanged: break;
+  }
+
+  operator()(n);
+  delay(curDur);
 }
 
-auto Sample::min(Note n) -> void
+auto Sample::play(const root &v) -> void
 {
-  if (isLate())
-    return;
-  chord(n, I, iii, V);
+  rootNote = v.v;
+}
+
+auto Sample::play(const dur &v) -> void
+{
+  curDur = v.v;
+}
+
+auto Sample::play(double v) -> void
+{
+  play(rootNote + v);
+}
+
+auto Sample::play(Articulation v) -> void
+{
+  articulation = v;
+}
+
+auto Sample::play(Rest) -> void
+{
+  delay(curDur);
+}
+
+auto Sample::play(chord<double> v) -> void
+{
+  for (auto i : v.v)
+  {
+    auto n = rootNote + i;
+    switch (articulation)
+    {
+    case Articulation::legato: n.setDur(curDur); break;
+    case Articulation::staccato: n.setDur(curDur / 4); break;
+    case Articulation::unchanged: break;
+    }
+
+    operator()(n);
+  }
+  delay(curDur);
+}
+
+auto Sample::play(chord<Note> v) -> void
+{
+  for (auto n : v.v)
+  {
+    switch (articulation)
+    {
+    case Articulation::legato: n.setDur(curDur); break;
+    case Articulation::staccato: n.setDur(curDur / 4); break;
+    case Articulation::unchanged: break;
+    }
+
+    operator()(n);
+  }
+  delay(curDur);
 }

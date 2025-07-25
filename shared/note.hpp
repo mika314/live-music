@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <initializer_list>
 #include <ser/macro.hpp>
 
 struct Note
@@ -12,8 +13,6 @@ struct Note
   auto setVel(double) -> Note &;
   auto setDur(double) const -> Note;
   auto setVel(double) const -> Note;
-  auto octaveUp() const -> Note;
-  auto octaveDown() const -> Note;
 };
 
 auto operator+(Note, double) -> Note;
@@ -22,7 +21,27 @@ auto operator+=(Note &, double) -> Note &;
 auto operator-(Note, double) -> Note;
 auto operator-=(Note &, double) -> Note &;
 
-// clang-format off
+struct root
+{
+  root(const Note &av) : v(av) {}
+  Note v;
+};
+
+struct dur
+{
+  double v;
+};
+
+struct Rest
+{
+};
+
+template <typename NoteType>
+struct chord
+{
+  std::initializer_list<NoteType> v;
+};
+
 constexpr Note C0 = {0};
 constexpr Note Cs0 = {1};
 constexpr Note Db0 = {1};
@@ -166,19 +185,37 @@ constexpr Note A7 = {93};
 constexpr Note As7 = {94};
 constexpr Note Bb7 = {94};
 constexpr Note B7 = {95};
-
 constexpr Note C8 = {96};
 
-constexpr int I       = 0;
-constexpr int ii      = 1;
-constexpr int II      = 2;
-constexpr int iii     = 3;
-constexpr int III     = 4;
-constexpr int IV      = 5;
-constexpr int V       = 7;
-constexpr int vi      = 8;
-constexpr int VI      = 9;
-constexpr int vii     = 10;
-constexpr int VII     = 11;
-constexpr int O       = 12;
-// clang-format on
+using Interval = double;
+
+constexpr Interval I = 0;
+constexpr Interval ii = 1;
+constexpr Interval II = 2;
+constexpr Interval iii = 3;
+constexpr Interval III = 4;
+constexpr Interval IV = 5;
+constexpr Interval V = 7;
+constexpr Interval vi = 8;
+constexpr Interval VI = 9;
+constexpr Interval vii = 10;
+constexpr Interval VII = 11;
+constexpr Interval O = 12;
+
+static auto Sixteenth = dur{.25};
+static auto Eighth = dur{.5};
+static auto Quarter = dur{1.};
+static auto Halth = dur{2.};
+static auto Whole = dur{4.};
+static auto Bar = dur{4.};
+static auto d32 = dur{.125};
+static auto d64 = dur{.0625};
+static auto d16 = dur{.25};
+static auto d8 = dur{.5};
+static auto d4 = dur{1.};
+static auto d2 = dur{2.};
+static auto d1 = dur{4.};
+static auto rest = Rest{};
+
+#define ChI(...) chord<Interval>{{__VA_ARGS__}}
+#define ChN(...) chord<Note>{{__VA_ARGS__}}

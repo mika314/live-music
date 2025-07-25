@@ -14,38 +14,31 @@ struct SynthParams
   Envelope envelope;
 };
 
+enum Articulation { legato, staccato, unchanged };
+
 class Synth : public Source
 {
 public:
   Synth(class Sink &, SynthParams = SynthParams{});
-  auto operator()(Note) -> void;
-
-  template <typename... Args>
-  auto operator()(Note n0, Args &&...n) -> void
+  template <typename... Event>
+  auto operator()(Event &&...e) -> void
   {
-    (*this)(n0);
-    (*this)(n...);
+    (play(e), ...);
   }
   auto operator()(Envelope) -> void;
-  auto maj(Note) -> void;
-  auto min(Note) -> void;
-  auto seq(Note key, int ofset, double dur) -> void
-  {
-    if (ofset >= 0)
-      (*this)(key + ofset);
-    delay(dur);
-  }
-  template <typename... Args>
-  auto seq(Note key, int ofset, double dur, Args &&...n) -> void
-  {
-    seq(key, ofset, dur);
-    seq(key, n...);
-  }
-  auto chord(Note key, int ofset) -> void { (*this)(key + ofset); }
-  template <typename... Args>
-  auto chord(Note key, int ofset, Args &&...n) -> void
-  {
-    chord(key, ofset);
-    chord(key, n...);
-  }
+  auto operator()(Note) -> void;
+  auto operator()(double) -> void;
+
+private:
+  auto play(Note) -> void;
+  auto play(const dur &) -> void;
+  auto play(const root &) -> void;
+  auto play(double) -> void;
+  auto play(Articulation) -> void;
+  auto play(Rest) -> void;
+  auto play(chord<double>) -> void;
+  auto play(chord<Note>) -> void;
+  double curDur = 1;
+  Note rootNote = C4;
+  Articulation articulation = Articulation::legato;
 };
