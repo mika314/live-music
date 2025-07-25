@@ -104,7 +104,11 @@ reverb.wet(0.5);
 instrument.send(reverb, -20, 0);
 ```
 
-### 4. Recompile and Run
+### 4. Samples
+
+A full list of available samples can be found in the `samples-list.txt` file.
+
+### 5. Recompile and Run
 
 After changes:
 
@@ -124,6 +128,6 @@ cd server
 ./server
 ```
 
-### 5. Keeping the Music Playing
+### 6. Keeping the Music Playing
 
 The `runForever()` function at the end of `main.cpp` ensures continuous playback by keeping the application running and processing threads.
