@@ -11,6 +11,7 @@
 
 int main()
 {
+  SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
   auto init = sdl::Init{SDL_INIT_AUDIO};
   auto loop = uv::Uv{};
   auto server = uv::Tcp{loop.loop()};

@@ -108,7 +108,7 @@ All composition logic resides in `client/main.cpp`, using a thread-based, fluent
 setBpm(120); // Global tempo
 ```
 
-> **Recommendation:** Set once at startup to maintain sync during live performance.
+> **Recommendation:** Set once at the beggining of the live performance session to maintain sync during live performance.
 
 ### 2. Instruments
 

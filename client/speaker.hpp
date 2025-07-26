@@ -5,5 +5,5 @@
 class Speaker : public Sink, public Source
 {
 public:
-  Speaker(double gain = 0, double pan = 0);
+  Speaker(double gain = -12, double pan = 0);
 };
