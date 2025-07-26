@@ -63,7 +63,9 @@ auto thread(auto func)
 auto createBass(Sink &, double gain = 0, double pan = 0) -> Synth;
 auto createPad(Sink &, double gain = 0, double pan = 0) -> Synth;
 auto createPluck(Sink &, double gain = 0, double pan = 0) -> Synth;
+auto createSynth(Sink &, double gain = 0, double pan = 0) -> Synth;
 auto delay(double) -> void;
+auto delay(const dur &) -> void;
 auto newThread() -> void;
 auto now() -> int;
 auto rnd() -> int;

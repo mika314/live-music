@@ -44,6 +44,11 @@ auto delay(double v) -> void
   std::this_thread::sleep_for(curTime - std::chrono::steady_clock::now());
 }
 
+auto delay(const dur &v) -> void
+{
+  delay(v.v);
+}
+
 auto getCurTime() -> decltype(std::chrono::steady_clock::now())
 {
   return curTime;
@@ -77,6 +82,16 @@ auto createPad(Sink &v, double gain, double pan) -> Synth
                 .pan = pan,
                 .oscType = OscType::sin,
                 .envelope = Envelope{.attack = .25, .decay = 0, .sustain = 0, .release = .25}}};
+}
+
+auto createSynth(Sink &v, double gain, double pan) -> Synth
+{
+  return Synth{
+    v,
+    SynthParams{.gain = gain,
+                .pan = pan,
+                .oscType = OscType::sin,
+                .envelope = Envelope{.attack = .01, .decay = .01, .sustain = -10, .release = .1}}};
 }
 
 auto isLate() -> bool
