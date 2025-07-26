@@ -2,8 +2,6 @@
 
 A live-coding C++ audio framework for real-time performance
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/mika314/live-music/actions)  [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
-
 A **real-time** live music performance system in C++, featuring a client for music generation and a server for audio processing. Designed for live-coding and continuous playback, enabling rapid prototyping of musical ideas.
 
 ---
@@ -219,17 +217,31 @@ auto main() -> int
 
   // Drums
   thread([&]() {
-    auto kick = Sample(master, "samples/stargate-sample-pack/fugue-state-audio/drums/kicks/x0xproc1-kick.wav", -10, -0.2);
+    auto kick = Sample(
+      master, "samples/stargate-sample-pack/fugue-state-audio/drums/kicks/x0xproc1-kick.wav", -5, -0.2);
     kick.send(reverb, -14);
-    auto snare = Sample(master, "samples/stargate-sample-pack/microlag/One-Shots/Drums/Snare1.wav", -5, 0.2);
-    snare.send(reverb, -14);
-    auto hat = Sample(master, "samples/stargate-sample-pack/microlag/One-Shots/Drums/Hihat1.wav", -5, 0.6);
-    hat.send(reverb, -14);
-    for (;;) {
+    for (;;)
       kick(d4, I);
-      snare(d4, I);
-      hat(d8, I);
-      hat(d8, I);
+  });
+
+  thread([&]() {
+    auto snare =
+      Sample(master, "samples/stargate-sample-pack/microlag/One-Shots/Drums/Snare1.wav", -2, 0.2);
+    snare.send(reverb, -14);
+    for (;;)
+      snare(d4, rest, I, rest, I);
+  });
+
+  thread([&]() {
+    auto hat =
+      Sample(master, "samples/stargate-sample-pack/microlag/One-Shots/Drums/Hihat1.wav", -5, 0.6);
+    hat.send(reverb, -14);
+    for (;;)
+    {
+      if (rnd() % 3 != 0)
+        hat(C4.setVel(-20 - (rnd() % 20)), d8, I);
+      else
+        hat(C4.setVel(-20 - (rnd() % 20)), d16, I, I);
     }
   });
 
@@ -237,7 +249,8 @@ auto main() -> int
   thread([&]() {
     auto bass = createBass(master, -10);
     bass.send(reverb, -5);
-    for (;;) {
+    for (;;)
+    {
       bass(d2, Articulation::staccato, E3, G2, F2, G2);
     }
   });
@@ -246,10 +259,11 @@ auto main() -> int
   thread([&]() {
     auto pluck = createPluck(master, -5, -0.5);
     pluck.send(reverb, -5);
-    for (;;) {
-      pluck(root{E4}, d4, I, ChI(I, III, V));
+    for (;;)
+    {
+      pluck(root{E4}, d4, rest, ChI(I, III, V));
       pluck(root{G4}, d4, I, ChI(I, III, V));
-      pluck(root{F4}, d4, I, ChI(I, III, V));
+      pluck(root{F4}, d4, rest, ChI(I, III, V));
       pluck(root{G4}, d4, I, ChI(I, III, V));
     }
   });
@@ -258,22 +272,28 @@ auto main() -> int
   thread([&]() {
     auto pad = createPad(master, -15, 0.5);
     pad.send(reverb, -2);
-      for (;;) {
-        pad(root{E3}, d8, Articulation::legato, I, III, V, O);
-        pad(root{G3}, d8, Articulation::legato, I, III, V, O);
-        pad(root{F3}, d8, Articulation::legato, I, III, V, O);
-        pad(root{G3}, d8, Articulation::legato, I, III, V, O);
-      }
+    for (;;)
+    {
+      pad(root{E3}, d8, Articulation::legato, I, III, V, O);
+      pad(root{G3}, d8, Articulation::legato, I, III, V, O);
+      pad(root{F3}, d8, Articulation::legato, I, III, V, O);
+      pad(root{G3}, d8, Articulation::legato, I, III, V, O);
+    }
   });
 
   // Melodic Sample
   thread([&]() {
-    auto piano = Sample(master, "VCSL/Chordophones/Zithers/Grand Piano, Kawai/Sustains/GPiano_sus_C4_v2_rr1_Player.wav", -13, 0.7);
+    auto piano =
+      Sample(master,
+             "VCSL/Chordophones/Zithers/Grand Piano, Kawai/Sustains/GPiano_sus_C4_v2_rr1_Player.wav",
+             -13,
+             0.7);
     piano.send(reverb, -13);
-    for (;;) {
-      piano(root{E4}, d8, ChI(I, III, V), I);
+    for (;;)
+    {
+      piano(root{E4}, d8, ChI(I, III, V), rest);
       piano(root{G3}, d8, ChI(I, III, V), I);
-      piano(root{F3}, d8, ChI(I, III, V), I);
+      piano(root{F3}, d8, ChI(I, III, V), rest);
       piano(root{G3}, d8, ChI(I, III, V), I);
     }
   });
@@ -286,7 +306,6 @@ auto main() -> int
 
 * **Client-only changes:** `make client`
 * **Full rebuild:** `make && cd server && ./server`
-* **Keep alive:** `runForever()`
 
 ---
 
@@ -300,12 +319,7 @@ auto main() -> int
 * **Note:** `Note`, `setDur`, `setVel`
 * **Envelope:** fields
 * **OscType:** waveforms
-
----
-
-## License
-
-MIT (see [LICENSE](LICENSE))
+* **Keep alive:** `runForever()`
 
 ---
 
