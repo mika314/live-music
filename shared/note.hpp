@@ -203,7 +203,20 @@ constexpr Interval vi = 8;
 constexpr Interval VI = 9;
 constexpr Interval vii = 10;
 constexpr Interval VII = 11;
+
 constexpr Interval O = 12;
+
+constexpr Interval VIII = O;
+constexpr Interval ix = 1 + O;
+constexpr Interval IX = 2 + O;
+constexpr Interval x = 3 + O;
+constexpr Interval X = 4 + O;
+constexpr Interval XI = 5 + O;
+constexpr Interval XII = 7 + O;
+constexpr Interval xiii = 8 + O;
+constexpr Interval XIII = 9 + O;
+constexpr Interval xiv = 10 + O;
+constexpr Interval XIV = 11 + O;
 
 static auto Sixteenth = dur{.25};
 static auto Eighth = dur{.5};
