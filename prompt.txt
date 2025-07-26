@@ -21,4 +21,4 @@ Task
 Outcome
 A continuous live performance where code changes drive evolving, punctuated by playful spoken cues. The stage is yours!
 
-@README.md @client/main.cpp
+@README.md @client/main.cpp @prompt.txt

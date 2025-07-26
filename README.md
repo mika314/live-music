@@ -1,133 +1,315 @@
 # Live Music System
 
-This project is a live music performance system consisting of a client and a server component. The client generates and plays music, while the server handles audio processing and related tasks.
+A live-coding C++ audio framework for real-time performance
 
-## Building the Project
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/mika314/live-music/actions)  [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-This project uses `coddle` as its build system. `coddle` is a C++ build tool that simplifies the compilation process. To build the client and server, navigate to the project root directory and run:
+A **real-time** live music performance system in C++, featuring a client for music generation and a server for audio processing. Designed for live-coding and continuous playback, enabling rapid prototyping of musical ideas.
+
+---
+
+## Table of Contents
+
+* [Features](#features)
+* [Prerequisites](#prerequisites)
+* [Installation](#installation)
+* [Usage](#usage)
+* [Composing Music](#composing-music)
+* [Full Composition Example](#full-composition-example)
+* [Development Workflow](#development-workflow)
+* [API Reference](#api-reference)
+* [License](#license)
+* [Acknowledgements](#acknowledgements)
+
+---
+
+## Features
+
+* Real-time audio synthesis and sample playback
+* DSL-style C++ API for notes, chords, and effects
+* Built-in reverb and spatial processing
+* Live-coding friendly (auto-restart client)
+* Cross-platform with minimal dependencies
+
+---
+
+## Prerequisites
+
+* **C++20** compiler (Clang)
+* **coddle** build tool
+* **libuv** (asynchronous I/O)
+* **SDL2** (audio and input)
+* **Make**
+* **Git**
+
+---
+
+## Installation
+
+1. **Install coddle**
+
+   ```bash
+   git clone https://github.com/coddle-cpp/coddle.git
+   cd coddle
+   ./build.sh
+   sudo ./deploy.sh
+   cd ..
+   ```
+2. **Clone live-music**
+
+   ```bash
+   git clone https://github.com/mika314/live-music.git
+   cd live-music
+   ```
+3. **Build project**
+
+   ```bash
+   make
+   ```
+
+---
+
+## Usage
+
+The system consists of two components:
+
+* **Server**: Performs audio processing, handles sample playback and effects, and outputs to your audio device.
+* **Client**: Generates musical events via the C++ DSL and sends them to the server in real time.
+
+To start the system:
+
+* **Run server**:
+
+  ```bash
+  cd server && ./server
+  ```
+
+* **Run client** (auto-rebuild on changes):
+
+  ```bash
+  make client
+  ```
+
+  This command recompiles the client and restarts it automatically whenever you modify your music code.
+
+Alternatively, manually launch the client:
 
 ```bash
-make
+cd client && ./client
 ```
 
-This will build both the `client` and `server` executables in their respective directories.
-
-## Running the Project
-
-To run the system, navigate to the `server` directory and execute the `server` binary:
-
-```bash
-cd server
-./server
-```
-
-The server automatically starts the client. The `Makefile` is configured to kill any currently running `client-running` processes when `make client` is executed, facilitating continuous operation and live-coding scenarios.
-
-## Project Structure
-
-* `client/`: Source code for the music generation client.
-* `server/`: Source code for the audio processing server.
-* `shared/`: Shared header files and source code used by both client and server.
-* `coddle-repo/`: Contains `coddle` configuration.
-* `server/samples/` and `server/VCSL/`: Collections of audio samples used by the system.
+---
 
 ## Composing Music
 
-You will primarily modify `client/main.cpp` to compose music. This C++ file allows you to define musical parts using threads and musical objects. After making changes, recompile and run the system to hear your composition. Refer to the **Recompile and Run** section for instructions.
+All composition logic resides in `client/main.cpp`, using a thread-based, fluent API.
 
-### 1. Setting the Tempo (BPM)
-
-Set the global tempo using `setBpm()` at the beginning of `main()`:
+### 1. Setting Tempo (BPM)
 
 ```cpp
-setBpm(120); // Sets the tempo to 120 beats per minute
+setBpm(120); // Global tempo
 ```
+
+> **Recommendation:** Set once at startup to maintain sync during live performance.
 
 ### 2. Instruments
 
-Both `Synth` and `Sample` classes share the same interface for playing music.
-
-#### Creating Instruments
-
-*   **Synths:** Use `createBass()`, `createPluck()`, and `createPad()` to create synthesizers with predefined parameters. You can also create a custom `Synth` object.
-*   **Samples:** Create a `Sample` object by providing the path to a WAV file.
+#### Built-in Synths
 
 ```cpp
-// Example: Creating a pluck synth
-auto synth = createPluck(master);
+auto bass  = createBass(master);
+bass(root{C2}, d4);
 
-// Example: Creating a sample instrument
-auto kick = Sample{master, "samples/stargate-sample-pack/karoryfer/kicks/kick_Polmuz_mod_20_clean.wav", -8};
+auto pluck = createPluck(master);
+pluck(root{E4}, d8, Articulation::staccato);
+
+auto pad   = createPad(master);
+pad(root{C3}, d2, Articulation::legato);
 ```
 
-#### Playing Notes and Chords
-
-The composition syntax is designed to be expressive and flexible. You can play sequences of notes and chords by passing a series of events to the instrument object.
+#### Custom Synth
 
 ```cpp
-// Example: A simple melody
+Synth mySynth(master, {
+  .gain     = -6.0,
+  .pan      = 0.0,
+  .oscType  = OscType::saw,
+  .envelope = Envelope{ .attack=0.01, .decay=0.1, .sustain=0.8, .release=0.2 }
+});
+mySynth(root{A4}, d4);
+```
+
+#### Samples
+
+```cpp
+auto kick = Sample(master, "samples/kick.wav", -8);
+kick(d4, I);
+```
+
+#### Sequencing Samples
+
+```cpp
 thread([&]() {
-  auto synth = createPluck(master);
-  synth.send(reverb, -5);
-  for (;;)
-  {
-    // clang-format off
-     synth(root{C4},        // Set the root note to C4
-           Articulation::legato, // Set the articulation to legato
-           d4,I,  I,  V,  V,  VI, VI, d2,  V, // Play a sequence of notes
-           d4,IV, IV, III,III,II, II, d2,  I,
-           d4,V,  V,  IV, IV, III,III,d2, II,
-           d4,V,  V,  IV, IV, III,III,d2, II);
-    // clang-format on
+  auto hat   = Sample(master, "samples/hat.wav");
+  auto snare = Sample(master, "samples/snare.wav");
+  auto kick  = Sample(master, "samples/kick.wav");
+  for (;;) {
+    kick(d4, I);
+    snare(d4, I);
+    hat(d4, I);
+    hat(d4, I);
   }
 });
 ```
 
-Key Concepts:
-
-*   `root{note}`: Sets the root note for the following sequence.
-*   `Articulation::{legato, staccato, unchanged}`: Sets the articulation for the following notes.
-*   `d4`, `d8`, `d16`, `Bar`, etc.: Predefined durations.
-*   `I`, `ii`, `III`, `iv`, `V`, etc.: Intervals relative to the root note.
-*   `ChI(...)`: Creates a chord with intervals relative to the root note.
-*   `ChN(...)`: Creates a chord with specific notes.
-*   `rest`: Represents a rest.
-
-### 3. Using Reverb
-
-Add reverb to instruments for spatial effects:
+#### Melodic Sample Example
 
 ```cpp
-auto reverb = Reverb{master};
+// Grand Piano sustain sample from VCSL
+auto piano = Sample(
+  master,
+  "VCSL/Chordophones/Zithers/Grand Piano, Kawai/Sustains/GPiano_sus_C4_v2_rr1_Player.wav",
+  -5
+);
+thread([&]() {
+  for (;;) {
+    piano(root{C4}, d4, ChN(C4, E4, G4), I);
+    piano(root{A3}, d4, ChN(A3, C4, E4), I);
+    piano(root{F3}, d4, ChN(F3, A3, C4), I);
+    piano(root{G3}, d4, ChN(G3, B3, D4), I);
+  }
+});
+```
+
+### 3. Expression Tools
+
+* **Chords:** `ChI(I, III, V)` → build by intervals; `ChN(C4, E4, G4)` → explicit notes
+* **Rests:** `rest` (insert rest of current default duration)
+* **Layering & Polyrhythms:** multiple `thread` calls with `delay`
+
+### 4. Reverb
+
+```cpp
+auto reverb = Reverb(master);
 reverb.wet(0.5);
-
-instrument.send(reverb, -20, 0);
+// Example: send a synth to reverb
+auto bass = createBass(master);
+bass.send(reverb, -20);
 ```
 
-### 4. Samples
+### 5. Sample Library
 
-A full list of available samples can be found in the `samples-list.txt` file.
+* `server/samples/` (drum hits, FX)
+* `server/VCSL/`  (extended pack
+  and list all samples: `cat samples-list.txt`)
 
-### 5. Recompile and Run
+---
 
-After changes:
+## Full Composition Example
 
-#### For client-only changes:
+```cpp
+#include "live-music.hpp"
 
-```bash
-make client
+auto main() -> int
+{
+  setBpm(120);
+  auto master = Speaker{};
+  auto reverb = Reverb{master};
+  reverb.wet(0.9);
+
+  // Drums
+  thread([&]() {
+    auto kick = Sample(master, "samples/stargate-sample-pack/fugue-state-audio/drums/kicks/x0xproc1-kick.wav", -10, -0.2);
+    kick.send(reverb, -14);
+    auto snare = Sample(master, "samples/stargate-sample-pack/microlag/One-Shots/Drums/Snare1.wav", -5, 0.2);
+    snare.send(reverb, -14);
+    auto hat = Sample(master, "samples/stargate-sample-pack/microlag/One-Shots/Drums/Hihat1.wav", -5, 0.6);
+    hat.send(reverb, -14);
+    for (;;) {
+      kick(d4, I);
+      snare(d4, I);
+      hat(d8, I);
+      hat(d8, I);
+    }
+  });
+
+  // Bass
+  thread([&]() {
+    auto bass = createBass(master, -10);
+    bass.send(reverb, -5);
+    for (;;) {
+      bass(d2, Articulation::staccato, E3, G2, F2, G2);
+    }
+  });
+
+  // Synth Melody
+  thread([&]() {
+    auto pluck = createPluck(master, -5, -0.5);
+    pluck.send(reverb, -5);
+    for (;;) {
+      pluck(root{E4}, d4, I, ChI(I, III, V));
+      pluck(root{G4}, d4, I, ChI(I, III, V));
+      pluck(root{F4}, d4, I, ChI(I, III, V));
+      pluck(root{G4}, d4, I, ChI(I, III, V));
+    }
+  });
+
+  // Pads
+  thread([&]() {
+    auto pad = createPad(master, -15, 0.5);
+    pad.send(reverb, -2);
+      for (;;) {
+        pad(root{E3}, d8, Articulation::legato, I, III, V, O);
+        pad(root{G3}, d8, Articulation::legato, I, III, V, O);
+        pad(root{F3}, d8, Articulation::legato, I, III, V, O);
+        pad(root{G3}, d8, Articulation::legato, I, III, V, O);
+      }
+  });
+
+  // Melodic Sample
+  thread([&]() {
+    auto piano = Sample(master, "VCSL/Chordophones/Zithers/Grand Piano, Kawai/Sustains/GPiano_sus_C4_v2_rr1_Player.wav", -13, 0.7);
+    piano.send(reverb, -13);
+    for (;;) {
+      piano(root{E4}, d8, ChI(I, III, V), I);
+      piano(root{G3}, d8, ChI(I, III, V), I);
+      piano(root{F3}, d8, ChI(I, III, V), I);
+      piano(root{G3}, d8, ChI(I, III, V), I);
+    }
+  });
+
+  runForever();
+}
 ```
 
-This kills the running client and starts a new one.
+## Development Workflow
 
-#### For server or shared code changes:
+* **Client-only changes:** `make client`
+* **Full rebuild:** `make && cd server && ./server`
+* **Keep alive:** `runForever()`
 
-```bash
-make
-cd server
-./server
-```
+---
 
-### 6. Keeping the Music Playing
+## API Reference
 
-The `runForever()` function at the end of `main.cpp` ensures continuous playback by keeping the application running and processing threads.
+* **Core Functions:** `setBpm`, `thread`, `delay`, `runForever`
+* **Synth:** `Synth`, `SynthParams`, `operator()`
+* **Sample:** `Sample`, `operator()`
+* **Reverb:** `Reverb`, `wet`
+* **Speaker:** `Speaker`
+* **Note:** `Note`, `setDur`, `setVel`
+* **Envelope:** fields
+* **OscType:** waveforms
+
+---
+
+## License
+
+MIT (see [LICENSE](LICENSE))
+
+---
+
+## Acknowledgements
+
+* coddle - build tool
+* Sample packs from **VCSL** and **karoryfer**

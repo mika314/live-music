@@ -4,8 +4,6 @@
 #include <shared/note.hpp>
 #include <shared/osc_type.hpp>
 
-auto delay(double) -> void;
-
 struct SynthParams
 {
   double gain = 0.0;

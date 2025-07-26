@@ -30,6 +30,9 @@ struct root
 struct dur
 {
   double v;
+  auto operator*(double other) const -> dur { return dur{v * other}; }
+  auto operator+(double other) const -> dur { return dur{v + other}; }
+  auto operator-(double other) const -> dur { return dur{v - other}; }
 };
 
 struct Rest
