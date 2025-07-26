@@ -25,9 +25,9 @@ auto Synth::internalPull(int samples) -> std::vector<float>
     const auto a = [this]() {
       auto a = 0.0f;
       for (const auto &n : notes)
-        a += powf(10.f, n.vel / 20.f) *
+        a += n.vel *
              envelope.amp(1.f * (pos - n.start) / SampleRate, 1.f * (n.end - n.start) / SampleRate) *
-             osc(440.f * powf(2.f, (n.note - 57.f) / 12.f));
+             osc(n.freq);
       return a;
     }();
     ++pos;
@@ -46,8 +46,9 @@ auto Synth::internalPull(int samples) -> std::vector<float>
 auto Synth::operator()(Note n) -> void
 {
   sink.get().lock();
-  notes.emplace_back(N{.note = n.n,
-                       .vel = n.vel,
+
+  notes.emplace_back(N{.freq = 440.f * pow(2.f, (n.n - 57.) / 12.),
+                       .vel = pow(10., n.vel / 20.),
                        .start = pos,
                        .end = pos + static_cast<int>(SampleRate * n.dur * 60 / bpm.get())});
   sink.get().unlock();

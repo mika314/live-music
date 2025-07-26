@@ -22,8 +22,8 @@ private:
   int pos = 0;
   struct N
   {
-    double note;
-    double vel = 0.0; // dB
+    double freq;
+    double vel = 0.0; // linear
     int start;
     int end;
   };

@@ -20,12 +20,15 @@ private:
   std::reference_wrapper<const double> bpm;
   std::filesystem::path path;
   std::reference_wrapper<std::vector<float>> sample;
-  Note note;
+  double sampleFreq;
   Envelope envelope;
   int pos = 0;
   struct N
   {
-    Note note;
+    double freq;
+    double dur;
+    double vel;
+
     int start;
   };
   std::vector<N> notes;

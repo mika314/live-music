@@ -83,14 +83,15 @@ auto Conn::ctor(int32_t rspId, Args &&...args)
 auto Conn::operator()(msg::Speaker_CtorReq v) -> void
 {
   LOG("speaker ctor", v.id);
-  ctor<Speaker>(v.id, masterSpeaker.get(), v.gain, v.pan);
+  ctor<Speaker>(v.id, masterSpeaker.get(), pow(10., v.gain / 20.), v.pan);
 }
 
 auto Conn::operator()(msg::Synth_CtorReq v) -> void
 {
   LOG("synth ctor", v.id);
   auto &sink = *dynamic_cast<Sink *>(entities[v.sinkId].get());
-  ctor<Synth>(v.id, bpm, sink, v.gain, v.pan, v.oscType, std::move(v.envelope));
+  v.envelope.sustain = pow(10, v.envelope.sustain / 20);
+  ctor<Synth>(v.id, bpm, sink, pow(10., v.gain / 20.), v.pan, v.oscType, std::move(v.envelope));
 }
 
 auto Conn::operator()(msg::SetBpm v) -> void
@@ -119,6 +120,7 @@ auto Conn::operator()(msg::Synth_Envelope v) -> void
       "release:",
       v.envelope.release);
   auto &synth = *dynamic_cast<Synth *>(entities[v.id].get());
+  v.envelope.sustain = pow(10, v.envelope.sustain / 20);
   synth(v.envelope);
 }
 
@@ -126,7 +128,7 @@ auto Conn::operator()(msg::Sample_CtorReq v) -> void
 {
   LOG("sample ctor", v.id, v.path);
   auto &sink = *dynamic_cast<Sink *>(entities[v.sinkId].get());
-  ctor<Sample>(v.id, bpm, sink, std::filesystem::path{v.path}, v.gain, v.pan, v.note);
+  ctor<Sample>(v.id, bpm, sink, std::filesystem::path{v.path}, pow(10., v.gain / 20.), v.pan, v.note);
 }
 
 auto Conn::operator()(msg::Sample_Note v) -> void
@@ -138,13 +140,14 @@ auto Conn::operator()(msg::Sample_Note v) -> void
 auto Conn::operator()(msg::Sample_Envelope v) -> void
 {
   auto &entity = *dynamic_cast<Sample *>(entities[v.id].get());
+  v.envelope.sustain = pow(10, v.envelope.sustain / 20);
   entity.set(v.envelope);
 }
 
 auto Conn::operator()(msg::Source_SetGain v) -> void
 {
   auto &entity = *dynamic_cast<Source *>(entities[v.id].get());
-  entity.gain = v.v;
+  entity.gain = pow(10., v.v / 20.);
 }
 
 auto Conn::operator()(msg::Source_SetPan v) -> void
@@ -157,7 +160,7 @@ auto Conn::operator()(msg::Reverb_CtorReq v) -> void
 {
   LOG("Reverb ctor", v.id);
   auto &sink = *dynamic_cast<Sink *>(entities[v.sinkId].get());
-  ctor<Reverb>(v.id, sink, v.gain, v.pan);
+  ctor<Reverb>(v.id, sink, pow(10., v.gain / 20.), v.pan);
 }
 
 auto Conn::operator()(msg::Reverb_SetWet v) -> void
@@ -170,5 +173,5 @@ auto Conn::operator()(msg::Source_SendReq v) -> void
 {
   auto &entity = *dynamic_cast<Source *>(entities[v.sourceId].get());
   auto &sink = *dynamic_cast<Sink *>(entities[v.sinkId].get());
-  send(v.id, msg::Source_SendRsp{.id = entity.send(sink, v.gain, v.pan).id});
+  send(v.id, msg::Source_SendRsp{.id = entity.send(sink, pow(10., v.gain / 20.), v.pan).id});
 }

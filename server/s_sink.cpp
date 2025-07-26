@@ -25,7 +25,7 @@ auto Sink::mix(int samples) -> std::vector<float>
       continue;
     r.resize(samples * ChN);
     const auto chunk = s->pull(samples);
-    const auto a = powf(10.f, s->gain / 20.f);
+    const auto a = s->gain;
     const auto pan = static_cast<float>(s->pan);
     for (auto i = 0; i < std::min(samples * ChN, static_cast<int>(chunk.size())); ++i)
       r[i] +=

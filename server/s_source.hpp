@@ -11,7 +11,7 @@ public:
   virtual ~Source();
   auto pull(int samples) -> std::vector<float>;
   auto send(class Sink &, double gain, double pan) -> class Send &;
-  double gain = 0.0;
+  double gain = 0.0; // linear
   double pan = 0.0;
 
 protected:
