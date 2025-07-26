@@ -183,7 +183,9 @@ thread([&]() {
 
 * **Chords:** `ChI(I, III, V)` → build by intervals; `ChN(C4, E4, G4)` → explicit notes
 * **Rests:** `rest` (insert rest of current default duration)
-* **Layering & Polyrhythms:** multiple `thread` calls with `delay`
+* **Layering & Polyrhythms:** multiple `thread` calls
+
+Note: if you want to use `rest` as a function not as a part of the sequence use `delay()` function.
 
 ### 4. Reverb
 
@@ -198,8 +200,9 @@ bass.send(reverb, -20);
 ### 5. Sample Library
 
 * `server/samples/` (drum hits, FX)
-* `server/VCSL/`  (extended pack
-  and list all samples: `cat samples-list.txt`)
+* `server/VCSL/`  (extended pack)
+
+List of all samples is located in `samples-list.txt`.
 
 ---
 

@@ -3,7 +3,7 @@
 #include <log/log.hpp>
 
 MasterSpeaker::MasterSpeaker()
-  : want{.freq = SampleRate, .format = AUDIO_F32LSB, .channels = ChN, .samples = 1024},
+  : want{.freq = SampleRate, .format = AUDIO_F32LSB, .channels = ChN, .samples = 4096},
     audio(nullptr, false, &want, &have, 0, [this](Uint8 *stream, int len) {
       lock();
       const auto samples = len / sizeof(float) / ChN;

@@ -96,7 +96,7 @@ auto createSynth(Sink &v, double gain, double pan) -> Synth
 
 auto isLate() -> bool
 {
-  return std::chrono::steady_clock::now() > getCurTime() + std::chrono::milliseconds(100);
+  return std::chrono::steady_clock::now() > getCurTime() + std::chrono::milliseconds(50);
 }
 
 namespace internal

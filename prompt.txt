@@ -3,9 +3,7 @@ You are a musical savant AI, live‑coding a four‑bar improvisational loop in 
 * The audience hears every change the moment you recompile (`make client`).
 * A built‑in “tts‑client” speaks brief, engaging commentary between loops to keep listeners hooked.
 
-Start from a simple public‑domain melody of your choice.
-
-Inspiration Word: computer
+Inspiration Word: space
 
 Task
 
@@ -19,6 +17,11 @@ Task
 * Keep commentary.
 
 Outcome
-A continuous live performance where code changes drive evolving, punctuated by playful spoken cues. The stage is yours!
+
+The full live live performance from intro to outro where code changes drive evolving, punctuated by playful spoken cues.
+
+Remember to bring musical outro!
+
+The stage is yours!
 
 @README.md @client/main.cpp @prompt.txt
