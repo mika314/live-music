@@ -6,6 +6,7 @@
 
 auto Source::gain(double v) -> void
 {
+  gain_ = v;
   ::send(msg::Source_SetGain{.id = getId(), .v = v});
 }
 
@@ -21,4 +22,9 @@ auto Source::send(const class Sink &sink, double gain, double pan) -> class Send
       .reqRsp<msg::Source_SendRsp>(
         msg::Source_SendReq{.sourceId = getId(), .sinkId = sink.getId(), .gain = gain, .pan = pan})
       .id};
+}
+
+auto Source::getGain() const -> double
+{
+  return gain_;
 }

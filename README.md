@@ -116,25 +116,25 @@ setBpm(120); // Global tempo
 
 ```cpp
 auto bass  = createBass(master);
-bass(root{C2}, d4);
+bass(root{C2}, d4, ...);
 
 auto pluck = createPluck(master);
-pluck(root{E4}, d8, Articulation::staccato);
+pluck(root{E4}, d8, Articulation::staccato, ...);
 
 auto pad   = createPad(master);
-pad(root{C3}, d2, Articulation::legato);
+pad(root{C3}, d2, Articulation::legato, ...);
 ```
 
 #### Custom Synth
 
 ```cpp
 Synth mySynth(master, {
-  .gain     = -6.0,
+  .gain     = -20.0,
   .pan      = 0.0,
   .oscType  = OscType::saw,
   .envelope = Envelope{ .attack=0.01, .decay=0.1, .sustain=0.8, .release=0.2 }
 });
-mySynth(root{A4}, d4);
+mySynth(root{A4}, d4, ...);
 ```
 
 #### Samples
