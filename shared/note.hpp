@@ -35,6 +35,11 @@ struct dur
   auto operator-(double other) const -> dur { return dur{v - other}; }
 };
 
+struct vel
+{
+  double v;
+};
+
 struct Rest
 {
 };
@@ -233,5 +238,17 @@ static auto d2 = dur{2.};
 static auto d1 = dur{4.};
 static auto rest = Rest{};
 
-#define ChI(...) chord<Interval>{{__VA_ARGS__}}
-#define ChN(...) chord<Note>{{__VA_ARGS__}}
+#define ChI(...)  \
+  chord<Interval> \
+  {               \
+    {             \
+      __VA_ARGS__ \
+    }             \
+  }
+#define ChN(...)  \
+  chord<Note>     \
+  {               \
+    {             \
+      __VA_ARGS__ \
+    }             \
+  }

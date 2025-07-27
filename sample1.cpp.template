@@ -1,0 +1,76 @@
+#include "live-music.hpp"
+
+auto main() -> int
+{
+  setBpm(120);
+  auto master = Speaker{};
+  auto reverb = Reverb{master};
+  reverb.wet(0.9);
+
+  thread([&]() {
+    auto sample =
+      Sample{master, "samples/stargate-sample-pack/karoryfer/kicks/kick_marching_20_old.wav"};
+    sample.send(reverb, -15);
+    for (;;)
+      sample(I, I, I, I);
+  });
+  thread([&]() {
+    auto sample =
+      Sample{master, "samples/stargate-sample-pack/fugue-state-audio/drums/snares/synthkit-snare.wav"};
+
+    sample.send(reverb, -15);
+    for (;;)
+      sample(rest, I, rest, I);
+  });
+  thread([&]() {
+    auto sample = Sample{
+      master, "samples/stargate-sample-pack/fugue-state-audio/drums/claps/x0xproc1-clap.wav", -15};
+    sample.send(reverb, -10);
+    for (;;)
+      sample(d4, vel{-12}, rest, I, rest, I, d4, rest, I, rest, d8, I, vel{-15}, I);
+  });
+  thread([&]() {
+    auto sample = Sample{master,
+                         "VCSL/Aerophones/Edge-blown Aerophones/Baroque Bass "
+                         "Recorder/SusVib/BassRecorder_SusVib_C3_rr1_Main.wav",
+                         -15,
+                         -.3,
+                         C3};
+    sample.send(reverb, -10);
+    for (;;)
+      sample(root(C2), d1, I, III, II, V);
+  });
+
+  thread([&]() {
+    auto sample = Sample{
+      master,
+      "VCSL/Aerophones/Edge-blown Aerophones/Renaissance Organ/Full/RenOrgan_Full_Room_C3_rr1.wav",
+      -25,
+      .3,
+      C3};
+    sample.send(reverb, -10);
+    for (;;)
+      sample(root(C3), d2, ChI(I, III, V), I, ChI(III, V, VII), III, ChI(II, IV, VI), II, V, V);
+  });
+
+  thread([&]() {
+    auto sample = Sample{master,
+                         "VCSL/Chordophones/Zithers/Harpsichord, "
+                         "English/Sustains/Lute/ZuckermannKitHarpsi_Lute_Sus_C4_rr1.wav",
+                         -15,
+                         .6,
+                         C4};
+    sample.send(reverb, -5);
+    for (;;)
+      sample(root(C4), d2, ChI(I, III, V), I, ChI(III, V, VII), III, ChI(II, IV, VI), II, V, V);
+  });
+
+  thread([&]() {
+    auto synth = createPluck(master, 15);
+    synth.send(reverb, -5);
+    for (;;)
+      synth(root(C4), d4, I, III, V, I, III, V, VII, III, II, IV, VI, II, V, V, V, V);
+  });
+
+  runForever();
+}

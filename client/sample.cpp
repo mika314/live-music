@@ -101,3 +101,8 @@ auto Sample::play(chord<Note> v) -> void
   }
   delay(curDur);
 }
+
+auto Sample::play(const vel &v) -> void
+{
+  rootNote.vel = v.v;
+}

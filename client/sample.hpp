@@ -22,6 +22,7 @@ public:
 private:
   auto play(Note) -> void;
   auto play(const dur &) -> void;
+  auto play(const vel &) -> void;
   auto play(const root &) -> void;
   auto play(double) -> void;
   auto play(Articulation) -> void;

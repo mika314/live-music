@@ -53,6 +53,11 @@ auto Synth::play(const dur &v) -> void
   curDur = v.v;
 }
 
+auto Synth::play(const vel &v) -> void
+{
+  rootNote.vel = v.v;
+}
+
 auto Synth::play(double v) -> void
 {
   play(rootNote + v);

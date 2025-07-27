@@ -1,0 +1,90 @@
+#include "live-music.hpp"
+
+auto main() -> int
+{
+  setBpm(70);
+  auto master = Speaker{};
+  auto reverb = Reverb{master};
+  reverb.wet(0.8);
+
+  thread([&]() {
+    auto pad = createPad(master, -22, 0.3);
+    pad.send(reverb, -12);
+    for (;;)
+      pad(d1, ChN(C3, Eb3, G3), rest, G2, ChN(G2, Bb2, D3), rest);
+  });
+
+  thread([&]() {
+    auto synth = createPluck(master, -18, -0.6);
+    synth.send(reverb, -8);
+    for (;;)
+      synth(d8, Eb4, G4, Eb4, C5, G4, Eb4, G4, C4, Eb4, G4, Eb4, Bb4, G4, Eb4, G4);
+  });
+
+  thread([&]() {
+    auto counterSynth =
+      Synth(master,
+            {.gain = -24.0,
+             .pan = 0.4,
+             .oscType = OscType::saw,
+             .envelope = Envelope{.attack = 0.1, .decay = 0.2, .sustain = 0.5, .release = 0.3}});
+    counterSynth.send(reverb, -10);
+    for (;;)
+      counterSynth(rest, G4, rest, F4, Eb4, D4, C4);
+  });
+
+  thread([&]() {
+    auto bass = createBass(master, -16);
+    bass.send(reverb, -15);
+    for (;;)
+      bass(d1, C2, G1);
+  });
+
+  thread([&]() {
+    auto kick =
+      Sample(master, "samples/stargate-sample-pack/fugue-state-audio/drums/kicks/sdbkit-kick.wav", -12);
+    kick.send(reverb, -20);
+    for (;;)
+      kick(d2, I, rest);
+  });
+
+  thread([&]() {
+    auto hat =
+      Sample(master, "samples/stargate-sample-pack/microlag/One-Shots/Drums/Hihat1.wav", -20, 0.8);
+    hat.send(reverb, -18);
+    for (;;)
+      hat(d8, rest, I, I, I);
+  });
+
+  thread([&]() {
+    auto piano =
+      Sample(master,
+             "VCSL/Chordophones/Zithers/Grand Piano, Kawai/Sustains/GPiano_sus_C4_v2_rr1_Player.wav",
+             -25,
+             0.7);
+    piano.send(reverb, -13);
+    for (;;)
+      piano(d4, G4, C5, Eb5, G4, C5, Eb5, G4);
+  });
+
+  thread([&]() {
+    auto shaker = Sample(
+      master, "VCSL/Idiophones/Struck Idiophones/Shaker, Small/Mid_Shaker_Roll_Fast_rr1.wav", -25, -0.7);
+    shaker.send(reverb, -15);
+    for (;;)
+      shaker(d1, I);
+  });
+
+  thread([&]() {
+    auto cymbal =
+      Sample(master,
+             "VCSL/Idiophones/Struck Idiophones/Suspended Cymbal 1/susCymb1_hit_bell_pp1.wav",
+             -25,
+             0.5);
+    cymbal.send(reverb, -10);
+    for (;;)
+      cymbal(d1, rest, rest, I, rest);
+  });
+
+  runForever();
+}
