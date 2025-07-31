@@ -6,6 +6,8 @@
 #include "s_speaker.hpp"
 #include "s_synth.hpp"
 #include <log/log.hpp>
+#include <msgpack/msgpack-ser.hpp>
+#include <sstream>
 
 Conn::Conn(uv::Tcp &&aTcp, std::function<auto(Conn *self)->void> destroy, MasterSpeaker &aMasterSpeaker)
   : tcp(std::move(aTcp)), masterSpeaker(aMasterSpeaker)
@@ -42,7 +44,11 @@ Conn::Conn(uv::Tcp &&aTcp, std::function<auto(Conn *self)->void> destroy, Master
 
 auto Conn::processPack(std::string_view pck) -> void
 {
-  ProtoC2S::deser(pck.data(), pck.data() + pck.size(), *this);
+  auto st = std::istringstream{std::string{pck}};
+
+  auto msg = ProtoC2S{};
+  msgpackDeser(st, msg);
+  std::visit(*this, msg.v);
 }
 
 auto Conn::operator()(msg::Log v) -> void
@@ -52,17 +58,16 @@ auto Conn::operator()(msg::Log v) -> void
 
 auto Conn::send(auto id, auto rsp)
 {
-  std::array<char, 0x10000> buf;
-  auto strm = OStrm{buf.begin(), buf.end()};
-  ::ser(strm, std::move(rsp));
-  const auto sz = static_cast<int32_t>(strm.size() + sizeof(int32_t));
+  auto st = std::ostringstream{};
+  msgpackSer(st, std::move(rsp));
+  const auto sz = static_cast<int32_t>(st.str().size() + sizeof(int32_t));
   tcp.write(
     std::string{reinterpret_cast<const char *>(&sz), reinterpret_cast<const char *>(&sz) + sizeof(sz)},
     [](int /*status*/) {});
   tcp.write(
     std::string{reinterpret_cast<const char *>(&id), reinterpret_cast<const char *>(&id) + sizeof(id)},
     [](int /*status*/) {});
-  tcp.write(std::string{buf.data(), buf.data() + strm.size()}, [](int /*status*/) {});
+  tcp.write(st.str(), [](int /*status*/) {});
 }
 
 auto Conn::operator()(msg::NowReq v) -> void

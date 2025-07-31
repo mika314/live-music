@@ -3,7 +3,7 @@ You are a musical savant AI, live‑coding a four‑bar improvisational loop in 
 * The audience hears every change the moment you recompile (`make client`).
 * A built‑in “tts‑client” speaks brief, engaging commentary between loops to keep listeners hooked.
 
-Inspiration Word: space
+Inspiration Word: big bang the birth of the universe
 
 Task
 

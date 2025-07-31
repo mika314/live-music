@@ -4,7 +4,8 @@
 #include "note.hpp"
 #include "osc_type.hpp"
 #include <ser/macro.hpp>
-#include <ser/proto.hpp>
+#include <string>
+#include <variant>
 
 namespace msg
 {
@@ -143,18 +144,23 @@ namespace msg
   };
 } // namespace msg
 
-using ProtoC2S = Proto<msg::Log,
-                       msg::NowReq,
-                       msg::SetBpm,
-                       msg::Speaker_CtorReq,
-                       msg::Synth_CtorReq,
-                       msg::Synth_Note,
-                       msg::Synth_Envelope,
-                       msg::Sample_CtorReq,
-                       msg::Sample_Note,
-                       msg::Sample_Envelope,
-                       msg::Source_SetGain,
-                       msg::Source_SetPan,
-                       msg::Reverb_CtorReq,
-                       msg::Reverb_SetWet,
-                       msg::Source_SendReq>;
+struct ProtoC2S
+{
+  std::variant<msg::Log,
+               msg::NowReq,
+               msg::SetBpm,
+               msg::Speaker_CtorReq,
+               msg::Synth_CtorReq,
+               msg::Synth_Note,
+               msg::Synth_Envelope,
+               msg::Sample_CtorReq,
+               msg::Sample_Note,
+               msg::Sample_Envelope,
+               msg::Source_SetGain,
+               msg::Source_SetPan,
+               msg::Reverb_CtorReq,
+               msg::Reverb_SetWet,
+               msg::Source_SendReq>
+    v;
+  SER_PROPS(v);
+};

@@ -1,5 +1,6 @@
 #pragma once
 #include "q.hpp"
+#include <msgpack/msgpack-ser.hpp>
 #include <shared/proto.hpp>
 #include <string>
 
@@ -17,17 +18,19 @@ public:
   template <typename Rsp>
   auto reqRsp(auto v) -> Rsp
   {
-    std::array<char, 0x10000> buf;
     const auto id = getNextId();
-    v.id = id;
-    const auto sz =
-      static_cast<int32_t>(ProtoC2S::ser(std::move(v), buf.data(), buf.data() + buf.size()));
-    req(std::string{buf.data(), buf.data() + sz});
-    auto payload = waitForRspId(id);
-    auto st = IStrm{payload.data(), payload.data() + payload.size()};
-    Rsp r;
-    ::deser(st, r);
-    return r;
+    {
+      auto st = std::ostringstream{};
+      v.id = id;
+      msgpackSer(st, ProtoC2S{std::move(v)});
+      req(st.str());
+    }
+    {
+      auto st = std::istringstream{waitForRspId(id)};
+      Rsp r;
+      msgpackDeser(st, r);
+      return r;
+    }
   }
 
 private:
@@ -53,8 +56,8 @@ auto ctor(auto v)
 
 auto send(auto v)
 {
-  auto &inst = Conn::getInst();
-  std::array<char, 0x10000> buf;
-  const auto sz = static_cast<int32_t>(ProtoC2S::ser(std::move(v), buf.data(), buf.data() + buf.size()));
-  inst.req(std::string{buf.data(), buf.data() + sz});
+  auto msg = ProtoC2S{.v = std::move(v)};
+  auto st = std::ostringstream{};
+  msgpackSer(st, msg);
+  Conn::getInst().req(st.str());
 }
